@@ -1,0 +1,143 @@
+@model SupplierManagement.Web.Models.RegisterViewModel
+
+<h2>Register</h2>
+
+@if (Model.ErrorMessage != null)
+{
+    <p style="color:red">@Model.ErrorMessage</p>
+}
+
+@using (Html.BeginForm("Register", "Auth", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <div>
+        @Html.LabelFor(m => m.Email)
+        @Html.TextBoxFor(m => m.Email, new { placeholder = "Email" })
+        @Html.ValidationMessageFor(m => m.Email, "", new { style = "color:red" })
+    </div>
+    <br />
+
+    <div>
+        @Html.LabelFor(m => m.FirstName)
+        @Html.TextBoxFor(m => m.FirstName, new { placeholder = "First Name" })
+        @Html.ValidationMessageFor(m => m.FirstName, "", new { style = "color:red" })
+    </div>
+    <br />
+
+    <div>
+        @Html.LabelFor(m => m.LastName)
+        @Html.TextBoxFor(m => m.LastName, new { placeholder = "Last Name" })
+        @Html.ValidationMessageFor(m => m.LastName, "", new { style = "color:red" })
+    </div>
+    <br />
+
+    <div>
+        <label>Gender</label><br />
+        <input type="radio" name="Gender" value="Male" @(Model.Gender == "Male" ? "checked" : "") /> Male
+        <input type="radio" name="Gender" value="Female" @(Model.Gender == "Female" ? "checked" : "") /> Female
+        @Html.ValidationMessageFor(m => m.Gender, "", new { style = "color:red" })
+    </div>
+    <br />
+
+    <div>
+        @Html.LabelFor(m => m.IsAdmin, "Is Admin")
+        @Html.CheckBoxFor(m => m.IsAdmin)
+    </div>
+    <br />
+
+    <div>
+        @Html.LabelFor(m => m.CountryId, "Country")
+        @Html.DropDownListFor(m => m.CountryId,
+            new SelectList(Model.Countries, "Value", "Text"),
+            "Select Country",
+            new { id = "CountryId" })
+        @Html.ValidationMessageFor(m => m.CountryId, "", new { style = "color:red" })
+    </div>
+    <br />
+
+    <div>
+        @Html.LabelFor(m => m.StateId, "State")
+        @Html.DropDownListFor(m => m.StateId,
+            new SelectList(Model.States, "Value", "Text"),
+            " Select State ",
+            new { id = "StateId" })
+        @Html.ValidationMessageFor(m => m.StateId, "", new { style = "color:red" })
+    </div>
+    <br />
+
+    <div>
+        @Html.LabelFor(m => m.CityId, "City")
+        @Html.DropDownListFor(m => m.CityId,
+            new SelectList(Model.Cities, "Value", "Text"),
+            "Select City ",
+            new { id = "CityId" })
+        @Html.ValidationMessageFor(m => m.CityId, "", new { style = "color:red" })
+    </div>
+    <br />
+
+    <div>
+        @Html.LabelFor(m => m.Password)
+        @Html.PasswordFor(m => m.Password, new { placeholder = "Password" })
+        @Html.ValidationMessageFor(m => m.Password, "", new { style = "color:red" })
+    </div>
+    <br />
+
+    <div>
+        @Html.LabelFor(m => m.ContactNo)
+        @Html.TextBoxFor(m => m.ContactNo, new { placeholder = "Contact No (optional)" })
+        @Html.ValidationMessageFor(m => m.ContactNo, "", new { style = "color:red" })
+    </div>
+    <br />
+
+    <button type="submit">Register</button>
+}
+
+@Html.ActionLink("Already have an account? Login", "Login", "Auth")
+
+@section Scripts {
+<script>
+    // Cascading: Country → State
+    document.getElementById('CountryId').addEventListener('change', function () {
+        const countryId = this.value;
+        const stateDropdown = document.getElementById('StateId');
+        const cityDropdown = document.getElementById('CityId');
+
+        stateDropdown.innerHTML = '<option value="">-- Select State --</option>';
+        cityDropdown.innerHTML = '<option value="">-- Select City --</option>';
+
+        if (!countryId) return;
+
+        fetch(`/Auth/GetStates?countryId=${countryId}`)
+            .then(r => r.json())
+            .then(states => {
+                states.forEach(s => {
+                    const opt = document.createElement('option');
+                    opt.value = s.value;
+                    opt.text = s.text;
+                    stateDropdown.appendChild(opt);
+                });
+            });
+    });
+
+    // Cascading: State → City
+    document.getElementById('StateId').addEventListener('change', function () {
+        const stateId = this.value;
+        const cityDropdown = document.getElementById('CityId');
+
+        cityDropdown.innerHTML = '<option value="">-- Select City --</option>';
+
+        if (!stateId) return;
+
+        fetch(`/Auth/GetCities?stateId=${stateId}`)
+            .then(r => r.json())
+            .then(cities => {
+                cities.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.value;
+                    opt.text = c.text;
+                    cityDropdown.appendChild(opt);
+                });
+            });
+    });
+</script>
+}

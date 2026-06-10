@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="SupplierManagement.Api/SupplierManagement.Api.csproj" />
+  <Project Path="SupplierManagement.Business/SupplierManagement.Business.csproj" />
+  <Project Path="SupplierManagement.Data/SupplierManagement.Data.csproj" />
+  <Project Path="SupplierManagement.Web/SupplierManagement.Web.csproj" />
+</Solution>

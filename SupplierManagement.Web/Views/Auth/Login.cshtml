@@ -1,0 +1,15 @@
+@model SupplierManagement.Web.Models.LoginViewModel
+<h2>Login</h2>
+@if(Model.ErrorMessage != null)
+{
+    <p style="color:red">@Model.ErrorMessage</p>
+}
+@using(Html.BeginForm("Login", "Auth", FormMethod.Post))
+{
+    @Html.TextBoxFor(m => m.Email, new { placeholder = "Email" })
+    <br />
+    @Html.PasswordFor(m => m.Password, new { placeholder = "Password" })
+    <br />
+    <button type="submit">Login</button>
+}
+@Html.ActionLink("Don't have an account? Register", "Register", "Auth")
