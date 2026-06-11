@@ -3,12 +3,10 @@ using SupplierManagement.Web.Models;
 public class AuthController : Controller
 {
     private readonly MVCAuthService _service;
-
     public AuthController(MVCAuthService service)
     {
         _service = service;
     }
-
     [HttpGet]
     public IActionResult Login() => View(new LoginViewModel());
     [HttpPost]
@@ -22,7 +20,9 @@ public class AuthController : Controller
             model.ErrorMessage = "Invalid email or password.";
             return View(model);
         }
-        return RedirectToAction("Index", "User");
+        HttpContext.Session.SetString("Role", user.Role);
+        HttpContext.Session.SetString("UserName", user.FirstName);
+        return RedirectToAction("Index", "Supplier");
     }
 
     [HttpGet]
@@ -38,6 +38,16 @@ public class AuthController : Controller
     [HttpPost]
     public async Task<IActionResult> Register(RegisterViewModel model)
     {
+        foreach (var key in ModelState.Keys)
+        {
+            var state = ModelState[key];
+            foreach (var error in state.Errors)
+            {
+                Console.WriteLine($"Field: {key} Error: {error.ErrorMessage}");
+            }
+        }
+
+
         if (!ModelState.IsValid)
         {
             model.Countries = await _service.GetCountries();
@@ -45,11 +55,11 @@ public class AuthController : Controller
             model.Cities = model.StateId > 0 ? await _service.GetCities(model.StateId) : new();
             return View(model);
         }
-        model.IsAdmin = model.IsAdmin;
-        var success = await _service.Register(model);
+        var (success, errormsg) = await _service.Register(model);
         if (!success)
         {
-            model.ErrorMessage = "Registration failed. Email may already exist.";
+           // model.ErrorMessage = "Registration failed. Email may already exist.";
+            model.ErrorMessage = errormsg;
             model.Countries = await _service.GetCountries();
             model.States = await _service.GetStates(model.CountryId);
             model.Cities = await _service.GetCities(model.StateId);

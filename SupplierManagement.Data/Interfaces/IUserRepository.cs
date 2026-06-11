@@ -1,4 +1,5 @@
 using SupplierManagement.Data.Entities;
+
 namespace SupplierManagement.Data.Interfaces;
 public interface IUserRepository
 {

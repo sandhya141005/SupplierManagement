@@ -7,15 +7,19 @@ using System.Text.Json.Serialization;
 public class MVCAuthService
 {
     private readonly HttpClient _http;
-
     public MVCAuthService(HttpClient http)
     {
         _http = http;
     }
-    public async Task<bool> Register(RegisterViewModel model)
+    public async Task<(bool Success, string Error)> Register(RegisterViewModel model)
     {
         var response = await _http.PostAsJsonAsync("api/auth/register", model);
-        return response.IsSuccessStatusCode;
+        if (!response.IsSuccessStatusCode)
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            return (false, error);
+        }
+        return (true, "");
     }
     public async Task<UserDTO?> Login(LoginViewModel model)
     {
@@ -26,7 +30,7 @@ public class MVCAuthService
     public async Task<List<SelectListItem>> GetCountries()
     {
         var result = await _http.GetFromJsonAsync<List<LocationItem>>("api/location/countries");
-        Console.WriteLine("Countries fetched: " + result?.Count);
+        //Console.WriteLine("Countries fetched: " + result?.Count);
         return result?.Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Name }).ToList()
                ?? new List<SelectListItem>();
     }

@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Rendering;
+
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 namespace SupplierManagement.Web.Models;
 
 public class RegisterViewModel
@@ -21,7 +23,8 @@ public class RegisterViewModel
     [Required(ErrorMessage = "Password is required")]
     public string Password { get; set; } = "";
 
-    [RegularExpression(@"^$|^\d{10}$", ErrorMessage = "Only numeric and special characters allowed")]
+    // [Phone(ErrorMessage = "Only numeric and special characters allowed")]
+    [RegularExpression(@"^(?:\d{10}|)$", ErrorMessage = "Contact number must be exactly 10 digits")]
     public string? ContactNo { get; set; }
 
     [Required(ErrorMessage = "Please select a country")]
@@ -36,7 +39,10 @@ public class RegisterViewModel
     public bool IsAdmin { get; set; }
 
     public string? ErrorMessage { get; set; }
+    [ValidateNever]
     public List<SelectListItem> Countries { get; set; } = new();
+    [ValidateNever]
     public List<SelectListItem> States { get; set; } = new();
+    [ValidateNever]
     public List<SelectListItem> Cities { get; set; } = new();
 }

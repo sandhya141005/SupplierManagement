@@ -1,14 +1,14 @@
 @model SupplierManagement.Web.Models.LoginViewModel
 <h2>Login</h2>
-@if(Model.ErrorMessage != null)
+@if (Model.ErrorMessage != null)
 {
     <p style="color:red">@Model.ErrorMessage</p>
 }
-@using(Html.BeginForm("Login", "Auth", FormMethod.Post))
+@using (Html.BeginForm("Login", "Auth", FormMethod.Post, new { autocomplete = "off" }))
 {
-    @Html.TextBoxFor(m => m.Email, new { placeholder = "Email" })
+    @Html.TextBoxFor(m => m.Email, new { placeholder = "Email", autocomplete = "off" })
     <br />
-    @Html.PasswordFor(m => m.Password, new { placeholder = "Password" })
+    @Html.PasswordFor(m => m.Password, new { placeholder = "Password", autocomplete = "new-password" })
     <br />
     <button type="submit">Login</button>
 }

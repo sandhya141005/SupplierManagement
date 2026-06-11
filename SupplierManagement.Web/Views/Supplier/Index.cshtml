@@ -1,0 +1,56 @@
+@model List<SupplierManagement.Web.Models.SupplierViewModel>
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+    <h2>Suppliers</h2>
+    @if (ViewBag.IsAdmin == true)
+    {
+        @Html.ActionLink( "Add Supplier", "Create", "Supplier",
+            null, new { style = "padding:8px 16px; background:blue; color:white; text-decoration:none;" })
+    }
+</div>
+
+<table border="1" cellpadding="8" cellspacing="0" width="100%">
+    <thead style="background:#f0f0f0;">
+        <tr>
+            <th>@Html.DisplayNameFor(m => m.First().CompanyName)</th>
+            <th>@Html.DisplayNameFor(m => m.First().TotalProducts)</th>
+            <th>@Html.DisplayNameFor(m => m.First().CatalogType)</th>
+            <th>@Html.DisplayNameFor(m => m.First().PaymentMethodsAllowed)</th>
+            <th>@Html.DisplayNameFor(m => m.First().CreatedDate)</th>
+            <th>@Html.DisplayNameFor(m => m.First().Country)</th>
+            <th>@Html.DisplayNameFor(m => m.First().State)</th>
+            <th>@Html.DisplayNameFor(m => m.First().City)</th>
+            <th>@Html.DisplayNameFor(m => m.First().ContactNo)</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var s in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => s.CompanyName)</td>
+                <td>@Html.DisplayFor(modelItem => s.TotalProducts)</td>
+                <td>@Html.DisplayFor(modelItem => s.CatalogType)</td>
+                <td>@Html.DisplayFor(modelItem => s.PaymentMethodsAllowed)</td>
+                <td>@Html.DisplayFor(modelItem => s.CreatedDate)</td>
+                <td>@Html.DisplayFor(modelItem => s.Country)</td>
+                <td>@Html.DisplayFor(modelItem => s.State)</td>
+                <td>@Html.DisplayFor(modelItem => s.City)</td>
+                <td>@Html.DisplayFor(modelItem => s.ContactNo)</td>
+
+                <td>
+                    @if (ViewBag.IsAdmin == true)
+                    {
+                        @Html.ActionLink("Edit", "Edit", "Supplier", new { id = s.SupplierId }, null)
+                        @: |
+                        @Html.ActionLink( "Delete","Delete","Supplier",new { id = s.SupplierId },new { style = "color:red;" })
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Add to Cart", "AddToCart","Cart",new { id = s.SupplierId },null)
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

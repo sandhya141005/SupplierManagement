@@ -9,7 +9,7 @@ public class User
     public string Gender { get; set; } = "";
     public string Role { get; set; } = "";
     public string Password { get; set; } = "";
-    public string ContactNo { get; set; } = "";
+    public string? ContactNo { get; set; }
     public int CountryId { get; set; }
     public int StateId { get; set; }
     public int CityId { get; set; }
