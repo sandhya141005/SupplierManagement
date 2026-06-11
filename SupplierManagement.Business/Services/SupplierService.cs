@@ -15,4 +15,16 @@ public class SupplierService : ISupplierService
     {
         return _repo.GetAll();
     }
+    public void Delete(int id)
+    {
+        _repo.Delete(id);
+    }
+    public Supplier? GetById(int id)
+    {
+        return _repo.GetById(id);
+    }
+    public void Edit(Supplier supplier)
+    {
+        _repo.Edit(supplier);
+    }
 }

@@ -1,0 +1,36 @@
+@model SupplierManagement.Web.Models.SupplierViewModel
+
+<h2>Edit Supplier</h2>
+
+@using (Html.BeginForm("Edit", "Supplier", new { id = Model.SupplierId }, FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.SupplierId)
+    <div>
+        @Html.LabelFor(m => m.CompanyName)
+        @Html.TextBoxFor(m => m.CompanyName)
+        @Html.ValidationMessageFor(m => m.CompanyName, "", new { style = "color:red" })
+    </div>
+    <br />
+    <div>
+        @Html.LabelFor(m => m.TotalProducts)
+        @Html.TextBoxFor(m => m.TotalProducts)
+    </div>
+    <br />
+    <div>
+        @Html.LabelFor(m => m.CatalogType)
+        @Html.TextBoxFor(m => m.CatalogType)
+    </div>
+    <br />
+    <div>
+        @Html.LabelFor(m => m.PaymentMethodsAllowed)
+        @Html.TextBoxFor(m => m.PaymentMethodsAllowed)
+    </div>
+    <br />
+    <div>
+        @Html.LabelFor(m => m.ContactNo)
+        @Html.TextBoxFor(m => m.ContactNo)
+    </div>
+    <br />
+    <button type="submit">Save Changes</button>
+    @Html.ActionLink("Cancel", "Index", "Supplier")
+}

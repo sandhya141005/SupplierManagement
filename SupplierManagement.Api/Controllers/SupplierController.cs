@@ -35,4 +35,57 @@ public class SupplierController : ControllerBase
 
         return Ok(suppliers);
     }
+    [HttpDelete("{id}")]
+    public IActionResult Delete(int id)
+    {
+        try
+        {
+            _service.Delete(id);
+            return Ok("Deleted successfully");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    [HttpGet("{id}")]
+    public IActionResult GetById(int id)
+    {
+        var supp = _service.GetById(id);
+        if (supp == null)
+            return NotFound("Supplier not found");
+        var supplierDTO = new SupplierDTO
+        {
+            SupplierId = supp.SupplierId,
+            CompanyName = supp.CompanyName,
+            TotalProducts = supp.TotalProducts,
+            CatalogType = supp.CatalogType,
+            PaymentMethodsAllowed = supp.PaymentMethodsAllowed,
+            CreatedDate = supp.CreatedDate.ToString("dd-MMM-yyyy"),
+            ContactNo = supp.ContactNo
+        };
+        return Ok(supplierDTO);
+    }
+    [HttpPut("{id}")]
+    public IActionResult Edit(int id, SupplierDTO dto)
+    {
+        try
+        {
+            var supp = _service.GetById(id);
+            if (supp == null)
+                return NotFound("Supplier not found");
+            supp.CompanyName = dto.CompanyName;
+            supp.TotalProducts = dto.TotalProducts;
+            supp.CatalogType = dto.CatalogType;
+            supp.PaymentMethodsAllowed = dto.PaymentMethodsAllowed;
+            supp.ContactNo = dto.ContactNo; 
+            _service.Edit(supp);
+            return Ok("Edited successfully");
+        }
+        catch(Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    
 }

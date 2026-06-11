@@ -3,7 +3,7 @@
     <h2>Suppliers</h2>
     @if (ViewBag.IsAdmin == true)
     {
-        @Html.ActionLink( "Add Supplier", "Create", "Supplier",
+        @Html.ActionLink("Add Supplier", "Create", "Supplier",
             null, new { style = "padding:8px 16px; background:blue; color:white; text-decoration:none;" })
     }
 </div>
@@ -41,12 +41,18 @@
                     @if (ViewBag.IsAdmin == true)
                     {
                         @Html.ActionLink("Edit", "Edit", "Supplier", new { id = s.SupplierId }, null)
-                        @: |
-                        @Html.ActionLink( "Delete","Delete","Supplier",new { id = s.SupplierId },new { style = "color:red;" })
+                        @Html.Raw(" | ")
+                        @using (Html.BeginForm("Delete", "Supplier", new { id = s.SupplierId }, FormMethod.Post))
+                        {
+                            <button type="submit" style="color:red; background:none; border:none; cursor:pointer; padding:0;"
+                                    onclick="return confirm('Are you sure you want to delete this supplier?');">
+                                Delete
+                            </button>
+                        }
                     }
                     else
                     {
-                        @Html.ActionLink("Add to Cart", "AddToCart","Cart",new { id = s.SupplierId },null)
+                        @Html.ActionLink("Add to Cart", "AddToCart", "Cart", new { id = s.SupplierId }, null)
                     }
                 </td>
             </tr>
