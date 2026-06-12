@@ -24,9 +24,15 @@
     </div><br />
 
     <div>
-        @Html.LabelFor(m => m.PaymentMethodsAllowed)
-        @Html.TextBoxFor(m => m.PaymentMethodsAllowed, new { placeholder = "e.g. UPI, COD" })
-        @Html.ValidationMessageFor(m => m.PaymentMethodsAllowed, "", new { style = "color:red" })
+        <label>Payment Methods</label><br />
+        @foreach (var method in SupplierManagement.Web.Models.PaymentMethodsList.All)
+        {
+            <input type="checkbox" name="SelectedPaymentMethods" value="@method" @(Model.SelectedPaymentMethods.Contains(method)
+                                              ? "checked" : "") />
+            @method
+            <br />
+        }
+        @Html.ValidationMessageFor(m => m.SelectedPaymentMethods, "", new { style = "color:red" })
     </div><br />
     <div>
         @Html.LabelFor(m => m.CountryId, "Country")
@@ -54,7 +60,7 @@
 
     <div>
         @Html.LabelFor(m => m.ContactNo)
-        @Html.TextBoxFor(m => m.ContactNo, new { placeholder = "Contact No (optional)" })
+        @Html.TextBoxFor(m => m.ContactNo)
         @Html.ValidationMessageFor(m => m.ContactNo, "", new { style = "color:red" })
     </div><br />
 

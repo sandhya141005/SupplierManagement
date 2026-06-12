@@ -28,7 +28,16 @@ public class SupplierController : Controller
         var supplier = await _service.GetById(id);
         if (supplier == null)
             return NotFound();
+        supplier.SelectedPaymentMethods = supplier.PaymentMethodsAllowed
+   .Split(',', StringSplitOptions.RemoveEmptyEntries)
+   .Select(s => s.Trim())
+   .ToList();
+
+        supplier.Countries = await _service.GetCountries();
+        supplier.States = supplier.CountryId > 0 ? await _service.GetStates(supplier.CountryId) : new();
+        supplier.Cities = supplier.StateId > 0 ? await _service.GetCities(supplier.StateId) : new();
         return View(supplier);
+
     }
     [HttpPost]
     public async Task<IActionResult> Edit(int id, SupplierViewModel supplier)
@@ -56,17 +65,18 @@ public class SupplierController : Controller
         /*ModelState.Remove("Countries");
         ModelState.Remove("States");
         ModelState.Remove("Cities");*/
+        ModelState.Remove("PaymentMethodsAllowed");
         ModelState.Remove("ErrorMessage");
         ModelState.Remove("CreatedDate");
         ModelState.Remove("Country");
         ModelState.Remove("State");
         ModelState.Remove("City");
-
+        supplier.PaymentMethodsAllowed = string.Join(", ", supplier.SelectedPaymentMethods);
         if (!ModelState.IsValid)
         {
             supplier.Countries = await _service.GetCountries();
-            supplier.States=supplier.CountryId>0?await _service.GetStates(supplier.CountryId):new ();
-            supplier.Cities=supplier.StateId>0?await _service.GetCities(supplier.StateId): new();
+            supplier.States = supplier.CountryId > 0 ? await _service.GetStates(supplier.CountryId) : new();
+            supplier.Cities = supplier.StateId > 0 ? await _service.GetCities(supplier.StateId) : new();
             return View(supplier);
         }
         var (success, error) = await _service.Add(supplier);

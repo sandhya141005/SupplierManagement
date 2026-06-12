@@ -14,8 +14,11 @@ public class SupplierViewModel
     public int TotalProducts { get; set; }
     [Required(ErrorMessage = "Catalog type is required")]
     public string CatalogType { get; set; } = "";
-    [Required(ErrorMessage = "Payment methods allowed is required")]
+    //[Required(ErrorMessage = "Payment methods allowed is required")]
+    [ValidateNever]
     public string PaymentMethodsAllowed { get; set; } = "";
+    [Required(ErrorMessage = "Select at least one payment method")]
+    public List<string> SelectedPaymentMethods { get; set; } = new();
     public string CreatedDate { get; set; } = "";
     public string Country { get; set; } = "";
     public string State { get; set; } = "";

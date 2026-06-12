@@ -7,6 +7,7 @@ public class ApiMappingProfile : Profile
 {
     public ApiMappingProfile()
     {
+        //check necessity of these mappings
         //RegisterDTO,User
         CreateMap<RegisterDTO, User>().ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.IsAdmin ? "Admin" : "User"));
         //User.UserDTO

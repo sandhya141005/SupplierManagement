@@ -1,7 +1,7 @@
 @model SupplierManagement.Web.Models.RegisterViewModel
 
-<h2>Register</h2>
-
+<div class="form-card">
+<h2 class="text-center">Register</h2>
 
 @if (Model.ErrorMessage != null)
 {
@@ -96,7 +96,7 @@
 
 
 @Html.ActionLink("Already have an account? Login", "Login", "Auth")
-
+</div>
 @section Scripts {
     <script>
 
