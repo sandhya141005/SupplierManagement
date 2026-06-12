@@ -1,7 +1,6 @@
 @model SupplierManagement.Web.Models.SupplierViewModel
 
 <h2>Edit Supplier</h2>
-
 @using (Html.BeginForm("Edit", "Supplier", new { id = Model.SupplierId }, FormMethod.Post))
 {
     @Html.HiddenFor(m => m.SupplierId)

@@ -34,4 +34,9 @@ public class SupplierRepository : ISupplierRepository
         _context.Suppliers.Update(supplier);
         _context.SaveChanges();
     }
+    public void Add(Supplier supplier)
+    {
+        _context.Suppliers.Add(supplier);
+        _context.SaveChanges();
+    }
 }

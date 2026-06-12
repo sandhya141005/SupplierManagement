@@ -27,4 +27,8 @@ public class SupplierService : ISupplierService
     {
         _repo.Edit(supplier);
     }
+    public void Add(Supplier supplier)
+    {
+        _repo.Add(supplier);
+    }
 }

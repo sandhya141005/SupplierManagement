@@ -7,9 +7,11 @@ using System.Text.Json.Serialization;
 public class MVCAuthService
 {
     private readonly HttpClient _http;
+    private readonly MVCLocationService _locationService;
     public MVCAuthService(HttpClient http)
     {
         _http = http;
+        _locationService = new MVCLocationService(http);
     }
     public async Task<(bool Success, string Error)> Register(RegisterViewModel model)
     {
@@ -27,34 +29,17 @@ public class MVCAuthService
         if (!response.IsSuccessStatusCode) return null;
         return await response.Content.ReadFromJsonAsync<UserDTO>();
     }
+
     public async Task<List<SelectListItem>> GetCountries()
     {
-        var result = await _http.GetFromJsonAsync<List<LocationItem>>("api/location/countries");
-        //Console.WriteLine("Countries fetched: " + result?.Count);
-        return result?.Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Name }).ToList()
-               ?? new List<SelectListItem>();
+        return await _locationService.GetCountries();
     }
-
     public async Task<List<SelectListItem>> GetStates(int countryId)
     {
-        var result = await _http.GetFromJsonAsync<List<LocationItem>>($"api/location/states/{countryId}");
-        return result?.Select(s => new SelectListItem { Value = s.Id.ToString(), Text = s.Name }).ToList()
-               ?? new List<SelectListItem>();
+        return await _locationService.GetStates(countryId);
     }
-
     public async Task<List<SelectListItem>> GetCities(int stateId)
     {
-        var result = await _http.GetFromJsonAsync<List<LocationItem>>($"api/location/cities/{stateId}");
-        return result?.Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Name }).ToList()
-               ?? new List<SelectListItem>();
+        return await _locationService.GetCities(stateId);
     }
-}
-
-public class LocationItem
-{
-    [JsonPropertyName("id")]
-    public int Id { get; set; }
-
-    [JsonPropertyName("name")]
-    public string Name { get; set; } = "";
 }

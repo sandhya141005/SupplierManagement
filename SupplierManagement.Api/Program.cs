@@ -4,8 +4,10 @@ using SupplierManagement.Business.Interfaces;
 using SupplierManagement.Business.Services;
 using SupplierManagement.Data.Interfaces;
 using SupplierManagement.Data.Repositories;
+using SupplierManagement.Api.Mappings;
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddAutoMapper(typeof(ApiMappingProfile));
 builder.Services.AddScoped<IUserRepository,UserRepository>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

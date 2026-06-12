@@ -1,4 +1,5 @@
 namespace SupplierManagement.Api.DTO;
+
 public class SupplierDTO
 {
     public int SupplierId { get; set; }
@@ -10,5 +11,8 @@ public class SupplierDTO
     public string Country { get; set; } = "";
     public string State { get; set; } = "";
     public string City { get; set; } = "";
-    public string ContactNo { get; set; } = "";
+    public string? ContactNo { get; set; }
+    public int CountryId { get; set; }
+    public int StateId { get; set; }
+    public int CityId { get; set; }     // ← add
 }

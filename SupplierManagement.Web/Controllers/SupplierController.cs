@@ -43,4 +43,44 @@ public class SupplierController : Controller
         return RedirectToAction("Index");
 
     }
+    [HttpGet]
+    public async Task<IActionResult> Add()
+    {
+        var model = new SupplierViewModel { Countries = await _service.GetCountries() };
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Add(SupplierViewModel supplier)
+    {
+        /*ModelState.Remove("Countries");
+        ModelState.Remove("States");
+        ModelState.Remove("Cities");*/
+        ModelState.Remove("ErrorMessage");
+        ModelState.Remove("CreatedDate");
+        ModelState.Remove("Country");
+        ModelState.Remove("State");
+        ModelState.Remove("City");
+
+        if (!ModelState.IsValid)
+        {
+            supplier.Countries = await _service.GetCountries();
+            supplier.States=supplier.CountryId>0?await _service.GetStates(supplier.CountryId):new ();
+            supplier.Cities=supplier.StateId>0?await _service.GetCities(supplier.StateId): new();
+            return View(supplier);
+        }
+        var (success, error) = await _service.Add(supplier);
+        if (!success)
+        {
+            ModelState.AddModelError("", error);
+            supplier.Countries = await _service.GetCountries();
+            supplier.States = supplier.CountryId > 0 ? await _service.GetStates(supplier.CountryId) : new();
+            supplier.Cities = supplier.StateId > 0 ? await _service.GetCities(supplier.StateId) : new();
+            return View(supplier);
+        }
+        return RedirectToAction("Index");
+
+    }
+
+
 }

@@ -1,5 +1,7 @@
+using SupplierManagement.Web.Mappings;
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddAutoMapper(typeof(WebMappingProfile));
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddSession();
@@ -14,6 +16,10 @@ builder.Services.AddHttpClient<MVCAuthService>(client =>
     client.BaseAddress = new Uri("http://localhost:5165/");
 });
 builder.Services.AddHttpClient<MVCSupplierService>(client =>
+{
+    client.BaseAddress = new Uri("http://localhost:5165/");
+});
+builder.Services.AddHttpClient<MVCLocationService>(client =>
 {
     client.BaseAddress = new Uri("http://localhost:5165/");
 });
