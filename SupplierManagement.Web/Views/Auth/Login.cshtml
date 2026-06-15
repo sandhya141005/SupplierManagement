@@ -1,17 +1,39 @@
 @model SupplierManagement.Web.Models.LoginViewModel
+@{
+    ViewData["Title"] = "Sign In";
+    Layout = "_Layout";
+}
+
 <div class="form-card">
-<h2 class="text-center">Login</h2>
-@if (Model.ErrorMessage != null)
-{
-    <p style="color:red">@Model.ErrorMessage</p>
-}
-@using (Html.BeginForm("Login", "Auth", FormMethod.Post, new { autocomplete = "off" }))
-{
-    @Html.TextBoxFor(m => m.Email, new { placeholder = "Email", autocomplete = "off" })
-    <br />
-    @Html.PasswordFor(m => m.Password, new { placeholder = "Password", autocomplete = "new-password" })
-    <br />
-    <button type="submit">Login</button>
-}
-@Html.ActionLink("Don't have an account? Register", "Register", "Auth")
+    <h2>Sign In</h2>
+
+    @if (Model.ErrorMessage != null)
+    {
+        <div class="error-message">@Model.ErrorMessage</div>
+    }
+
+    @using (Html.BeginForm("Login", "Auth", FormMethod.Post, new { autocomplete = "off" }))
+    {
+        <div class="form-group">
+            @Html.LabelFor(m => m.Email, "Email address")
+            @Html.TextBoxFor(m => m.Email, new { placeholder = "you@example.com", autocomplete = "off", @class = "" })
+            @Html.ValidationMessageFor(m => m.Email, "", new { style = "color:#B71C1C;font-size:0.8rem;" })
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.Password, "Password")
+            @Html.PasswordFor(m => m.Password, new { placeholder = "••••••••", autocomplete = "new-password" })
+            @Html.ValidationMessageFor(m => m.Password, "", new { style = "color:#B71C1C;font-size:0.8rem;" })
+        </div>
+
+        <div class="form-actions">
+            <button type="submit">Sign In</button>
+        </div>
+    }
+
+    <div class="form-footer-link">
+        Don't have an account?
+        @Html.ActionLink("Register", "Register", "Auth",null,new { @style = "font-weight:bold;" })
+    </div>
+
 </div>
