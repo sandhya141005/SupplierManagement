@@ -16,11 +16,8 @@ public class SupplierController : Controller
     [HttpPost]
     public async Task<IActionResult> Delete(int id)
     {
-
-
         await _service.Delete(id);
         return RedirectToAction("Index");
-
     }
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
@@ -28,29 +25,25 @@ public class SupplierController : Controller
         var supplier = await _service.GetById(id);
         if (supplier == null)
             return NotFound();
-        supplier.SelectedPaymentMethods = supplier.PaymentMethodsAllowed
-   .Split(',', StringSplitOptions.RemoveEmptyEntries)
-   .Select(s => s.Trim())
-   .ToList();
+        supplier.SelectedPaymentMethods = supplier.PaymentMethodsAllowed.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToList();
 
         supplier.Countries = await _service.GetCountries();
         supplier.States = supplier.CountryId > 0 ? await _service.GetStates(supplier.CountryId) : new();
         supplier.Cities = supplier.StateId > 0 ? await _service.GetCities(supplier.StateId) : new();
         return View(supplier);
-
     }
     [HttpPost]
     public async Task<IActionResult> Edit(int id, SupplierViewModel supplier)
     {
+        supplier.PaymentMethodsAllowed = string.Join(", ", supplier.SelectedPaymentMethods);
+
         var success = await _service.Edit(id, supplier);
         if (!success)
         {
             ModelState.AddModelError("", "Failed to update supplier");
             return View(supplier);
-
         }
         return RedirectToAction("Index");
-
     }
     [HttpGet]
     public async Task<IActionResult> Add()
@@ -62,35 +55,80 @@ public class SupplierController : Controller
     [HttpPost]
     public async Task<IActionResult> Add(SupplierViewModel supplier)
     {
-        /*ModelState.Remove("Countries");
-        ModelState.Remove("States");
-        ModelState.Remove("Cities");*/
         ModelState.Remove("PaymentMethodsAllowed");
         ModelState.Remove("ErrorMessage");
         ModelState.Remove("CreatedDate");
         ModelState.Remove("Country");
         ModelState.Remove("State");
         ModelState.Remove("City");
+        ModelState.Remove("ContactNo");
+
         supplier.PaymentMethodsAllowed = string.Join(", ", supplier.SelectedPaymentMethods);
+
+        // strip empty trailing rows browser may have submitted
+        supplier.Products = supplier.Products.Where(p => !string.IsNullOrWhiteSpace(p.ProductName)).ToList();
         if (!ModelState.IsValid)
         {
-            supplier.Countries = await _service.GetCountries();
-            supplier.States = supplier.CountryId > 0 ? await _service.GetStates(supplier.CountryId) : new();
-            supplier.Cities = supplier.StateId > 0 ? await _service.GetCities(supplier.StateId) : new();
+            await ReloadDropdowns(supplier);
             return View(supplier);
         }
+        if (supplier.Products.Count == 0)
+        {
+            ModelState.AddModelError("", "At least one product is required");
+            await ReloadDropdowns(supplier);
+            return View(supplier);
+        }
+
+        if (supplier.Products.Count != supplier.TotalProducts)
+        {
+            ModelState.AddModelError("", $"Please add exactly {supplier.TotalProducts} product(s). You added {supplier.Products.Count}.");
+            await ReloadDropdowns(supplier);
+            return View(supplier);
+        }
+
+        foreach (var p in supplier.Products)
+        {
+            if (string.IsNullOrWhiteSpace(p.Category))
+                p.Category = supplier.CatalogType;
+            if (p.Price <= 0)
+            {
+                ModelState.AddModelError("", $"Price for '{p.ProductName}' must be greater than 0.");
+            }
+            if (p.AvailableStock < 0)
+            {
+                ModelState.AddModelError("", $"Stock for '{p.ProductName}' cannot be negative.");
+            }
+        }
+
+        if (!ModelState.IsValid)
+        {
+            await ReloadDropdowns(supplier);
+            return View(supplier);
+        }
+
         var (success, error) = await _service.Add(supplier);
         if (!success)
         {
             ModelState.AddModelError("", error);
-            supplier.Countries = await _service.GetCountries();
-            supplier.States = supplier.CountryId > 0 ? await _service.GetStates(supplier.CountryId) : new();
-            supplier.Cities = supplier.StateId > 0 ? await _service.GetCities(supplier.StateId) : new();
+            await ReloadDropdowns(supplier);
             return View(supplier);
         }
-        return RedirectToAction("Index");
 
+        return RedirectToAction("Index");
     }
 
+    private async Task ReloadDropdowns(SupplierViewModel supplier)
+    {
+        supplier.Countries = await _service.GetCountries();
+        supplier.States = supplier.CountryId > 0 ? await _service.GetStates(supplier.CountryId) : new();
+        supplier.Cities = supplier.StateId > 0 ? await _service.GetCities(supplier.StateId) : new();
+    }
 
+    public async Task<IActionResult> Details(int id)
+    {
+        var supplier = await _service.GetById(id);
+        if (supplier == null)
+            return NotFound();
+        return View("~/Views/Supplier/Details.cshtml", supplier);
+    }
 }

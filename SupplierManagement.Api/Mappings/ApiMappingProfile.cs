@@ -31,5 +31,9 @@ public class ApiMappingProfile : Profile
                 opt => opt.MapFrom(src => src.State != null ? src.State.StateName : ""))
             .ForMember(dest => dest.City,
                 opt => opt.MapFrom(src => src.City != null ? src.City.CityName : ""));
+        //Product,ProductDTO
+        CreateMap<Product, ProductDTO>().ReverseMap();
+
+        //CreateMap<Supplier, SupplierDTO>() .ReverseMap();
     }
 }

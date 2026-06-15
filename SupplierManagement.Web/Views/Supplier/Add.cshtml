@@ -10,6 +10,15 @@
     {
         <div class="error-message">@Model.ErrorMessage</div>
     }
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="error-message">
+            @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <div>@err.ErrorMessage</div>
+            }
+        </div>
+    }
 
     @using (Html.BeginForm("Add", "Supplier", FormMethod.Post, new { autocomplete = "off" }))
     {
@@ -22,13 +31,13 @@
 
             <div class="form-group">
                 @Html.LabelFor(m => m.CatalogType, "Catalog Type")
-                @Html.TextBoxFor(m => m.CatalogType, new { placeholder = "e.g. Electronics" })
+                @Html.TextBoxFor(m => m.CatalogType, new { placeholder = "e.g. Electronics", id = "CatalogType" })
                 @Html.ValidationMessageFor(m => m.CatalogType, "", new { style = "color:#B71C1C;font-size:0.8rem;" })
             </div>
 
             <div class="form-group">
                 @Html.LabelFor(m => m.TotalProducts, "Total Products")
-                @Html.TextBoxFor(m => m.TotalProducts, new { placeholder = "0" })
+                @Html.TextBoxFor(m => m.TotalProducts, new { placeholder = "0", id = "TotalProducts", type = "number", min = "1" })
                 @Html.ValidationMessageFor(m => m.TotalProducts, "", new { style = "color:#B71C1C;font-size:0.8rem;" })
             </div>
 
@@ -80,6 +89,15 @@
             </div>
         </div>
 
+        <hr class="divider" />
+
+        <h3>Products <span id="productCountLabel" style="font-size:0.85rem; color:var(--rc-hint); font-weight:400;"></span></h3>
+        <div id="productsContainer"></div>
+
+        <button type="button" id="addProductBtn" class="btn-primary-rc" style="margin-top:8px;">
+            + Add Product
+        </button>
+
         <div class="form-actions">
             <button type="submit">Add Supplier</button>
             @Html.ActionLink(
@@ -127,5 +145,71 @@
                     });
                 });
         });
+
+        let productCount = 0;
+
+        function updateProductCountLabel() {
+            const total = parseInt(document.getElementById("TotalProducts").value, 10);
+            const label = isNaN(total) ? '?' : total;
+            document.getElementById("productCountLabel").textContent = `(${productCount} / ${label} added)`;
+        }
+
+        document.getElementById("addProductBtn").addEventListener("click", function () {
+            const rawValue = document.getElementById("TotalProducts").value;
+            const totalProducts = parseInt(rawValue, 10);
+
+            if (rawValue === "" || isNaN(totalProducts) || totalProducts <= 0) {
+                alert("Please enter the number of products first");
+                return;
+            }
+
+            if (productCount >= totalProducts) {
+                alert("Maximum products reached");
+                return;
+            }
+
+            const category = document.getElementById("CatalogType").value;
+            const idx = productCount;
+            const html = `
+                <div class="product-card" id="product_${idx}" style="border:1px solid #ddd; border-radius:8px; padding:12px; margin-bottom:10px; position:relative;">
+                    <button type="button" class="btn-danger-rc btn-sm removeProductBtn" data-idx="${idx}" style="position:absolute; top:8px; right:8px;">&times;</button>
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:0 1rem;">
+                        <div class="form-group">
+                            <label>Product Name</label>
+                            <input name="Products[${idx}].ProductName" placeholder="Product Name" />
+                        </div>
+                        <div class="form-group">
+                            <label>Price</label>
+                            <input name="Products[${idx}].Price" placeholder="Price" type="number" step="0.01" min="0" />
+                        </div>
+                        <div class="form-group">
+                            <label>Discount</label>
+                            <input name="Products[${idx}].Discount" placeholder="Discount" type="number" step="0.01" min="0" value="0" />
+                        </div>
+                        <div class="form-group">
+                            <label>Available Stock</label>
+                            <input name="Products[${idx}].AvailableStock" placeholder="Stock" type="number" min="0" />
+                        </div>
+                        <div class="form-group" style="grid-column:1/-1;">
+                            <label>Category</label>
+                            <input name="Products[${idx}].Category" value="${category}" readonly />
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById("productsContainer").insertAdjacentHTML("beforeend", html);
+            productCount++;
+            updateProductCountLabel();
+        });
+
+        document.getElementById("productsContainer").addEventListener("click", function (e) {
+            if (e.target.classList.contains("removeProductBtn")) {
+                e.target.closest(".product-card").remove();
+                productCount--;
+                updateProductCountLabel();
+            }
+        });
+
+        document.getElementById("TotalProducts").addEventListener("input", updateProductCountLabel);
     </script>
 }

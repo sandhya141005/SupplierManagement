@@ -72,9 +72,9 @@ public class SupplierController : ControllerBase
             ContactNo = supp.ContactNo
         };
         return Ok(supplierDTO);*/
-        var supp=_service.GetById(id);
-        if(supp==null)
-            return NotFound("Supplier not found");  
+        var supp = _service.GetById(id);
+        if (supp == null)
+            return NotFound("Supplier not found");
         return Ok(_mapper.Map<SupplierDTO>(supp));
     }
     [HttpPut("{id}")]
@@ -100,19 +100,19 @@ public class SupplierController : ControllerBase
         */
         try
         {
-            var supp=_service.GetById(id);
-            if(supp==null)
+            var supp = _service.GetById(id);
+            if (supp == null)
                 return NotFound("Supplier not found");
             _mapper.Map(dto, supp);
             _service.Edit(supp);
             return Ok("Edited successfully");
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             return BadRequest(ex.Message);
         }
     }
-   // [HttpPost]
+    // [HttpPost]
     /*public IActionResult Add(SupplierDTO dto)
     {
         try
@@ -136,16 +136,27 @@ public class SupplierController : ControllerBase
         }
     }*/
     [HttpPost]
+    [HttpPost]
     public IActionResult Add(SupplierDTO dto)
     {
         try
         {
             var supplier = _mapper.Map<Supplier>(dto);
+            if (dto.Products != null && dto.Products.Count > 0)
+            {
+                supplier.Products = _mapper.Map<List<Product>>(dto.Products);
+                foreach (var p in supplier.Products)
+                {
+                    if (string.IsNullOrWhiteSpace(p.Category))
+                        p.Category = dto.CatalogType;
+                    p.CreatedDate = DateTime.Now;
+                }
+            }
+
             _service.Add(supplier);
             return Ok("Supplier Added Successfully");
-
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             return BadRequest(ex.Message);
         }

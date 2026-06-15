@@ -42,4 +42,8 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
         .WithMany()
         .HasForeignKey(s => s.CityId)
         .OnDelete(DeleteBehavior.NoAction);
+    modelBuilder.Entity<Product>()
+    .HasOne(p => p.Supplier)
+    .WithMany(s => s.Products)
+    .HasForeignKey(p => p.SupplierId);
 }}

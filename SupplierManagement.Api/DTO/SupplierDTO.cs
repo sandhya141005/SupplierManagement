@@ -15,4 +15,5 @@ public class SupplierDTO
     public int CountryId { get; set; }
     public int StateId { get; set; }
     public int CityId { get; set; }     // ← add
+    public List<ProductDTO> Products { get; set; } = new();
 }

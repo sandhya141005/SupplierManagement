@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace SupplierManagement.Web.Models;
-
 public class SupplierViewModel
 {
     public int SupplierId { get; set; }
@@ -41,4 +40,6 @@ public class SupplierViewModel
     public List<SelectListItem> States { get; set; } = new();
     [ValidateNever]
     public List<SelectListItem> Cities { get; set; } = new();
+    [ValidateNever]
+    public List<ProductViewModel> Products { get; set; } = new();
 }

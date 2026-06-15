@@ -1,16 +1,16 @@
-using System.ComponentModel.DataAnnotations;
-public class ProductViewModel
+public class ProductDTO
 {
     public int ProductId { get; set; }
 
-    [Required]
     public string ProductName { get; set; } = "";
 
     public string Category { get; set; } = "";
+
     public decimal Price { get; set; }
-    public int AvailableStock { get; set; }
 
     public decimal Discount { get; set; }
+
+    public int AvailableStock { get; set; }
 
     public int SupplierId { get; set; }
 }

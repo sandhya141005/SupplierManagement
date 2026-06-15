@@ -1,0 +1,57 @@
+@model SupplierManagement.Web.Models.SupplierViewModel
+@{
+    ViewData["Title"] = "Supplier Details";
+}
+
+<div class="form-card form-card-wide">
+    <h2>@Model.CompanyName</h2>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px 2rem; margin-bottom:1.5rem;">
+        <div><strong>Catalog Type:</strong> @Model.CatalogType</div>
+        <div><strong>Total Products:</strong> @Model.TotalProducts</div>
+        <div><strong>Payment Methods:</strong> @Model.PaymentMethodsAllowed</div>
+        <div><strong>Location:</strong> @Model.City, @Model.State, @Model.Country</div>
+        <div><strong>Contact:</strong> @Model.ContactNo</div>
+        <div><strong>Added On:</strong> @Model.CreatedDate</div>
+    </div>
+
+    <hr class="divider" />
+
+    <h3>Products</h3>
+    @if (Model.Products == null || !Model.Products.Any())
+    {
+        <p>No products listed for this supplier.</p>
+    }
+    else
+    {
+        <div class="table-card">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Discount</th>
+                        <th>Stock</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model.Products)
+                    {
+                        <tr>
+                            <td>@p.ProductName</td>
+                            <td>@p.Category</td>
+                            <td>@p.Price.ToString("0.00")</td>
+                            <td>@p.Discount.ToString("0.00")</td>
+                            <td>@p.AvailableStock</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <div class="form-actions">
+        @Html.ActionLink("Back to Suppliers", "Index", "Supplier", null, new { @class = "btn-secondary-rc" })
+    </div>
+</div>
