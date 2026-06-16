@@ -68,7 +68,12 @@
                                 </span>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link nav-logout" asp-controller="Auth" asp-action="Login">Sign out</a>
+                                @using (Html.BeginForm("Logout", "Auth", FormMethod.Post, new { style = "display:inline;" }))
+                                {
+                                    <button type="submit" class="nav-link nav-logout" style="background:none; border:none; cursor:pointer;">
+                                        Sign out
+                                    </button>
+                                }
                             </li>
                         }
                     </ul>

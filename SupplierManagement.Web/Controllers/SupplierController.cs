@@ -33,45 +33,45 @@ public class SupplierController : Controller
         return View(supplier);
     }
    
-    [HttpPost]
-    public async Task<IActionResult> Edit(int id, SupplierViewModel supplier)
+   [HttpPost]
+public async Task<IActionResult> Edit(int id, SupplierViewModel supplier)
+{
+    ModelState.Remove("PaymentMethodsAllowed");
+    ModelState.Remove("ErrorMessage");
+    ModelState.Remove("CreatedDate");
+    ModelState.Remove("Country");
+    ModelState.Remove("State");
+    ModelState.Remove("City");
+    ModelState.Remove("ContactNo");
+
+    supplier.PaymentMethodsAllowed = string.Join(", ", supplier.SelectedPaymentMethods);
+
+    supplier.Products = supplier.Products
+        .Where(p => !string.IsNullOrWhiteSpace(p.ProductName))
+        .ToList();
+
+    if (!ModelState.IsValid)
     {
-        ModelState.Remove("PaymentMethodsAllowed");
-        ModelState.Remove("ErrorMessage");
-        ModelState.Remove("CreatedDate");
-        ModelState.Remove("Country");
-        ModelState.Remove("State");
-        ModelState.Remove("City");
-        ModelState.Remove("ContactNo");
-
-        supplier.PaymentMethodsAllowed = string.Join(", ", supplier.SelectedPaymentMethods);
-
-        supplier.Products = supplier.Products
-            .Where(p => !string.IsNullOrWhiteSpace(p.ProductName))
-            .ToList();
-
-        if (!ModelState.IsValid)
-        {
-            await ReloadDropdowns(supplier);
-            return View(supplier);
-        }
-
-        if (supplier.Products.Count != supplier.TotalProducts)
-        {
-            ModelState.AddModelError("", $"Please ensure exactly {supplier.TotalProducts} product(s). You have {supplier.Products.Count}.");
-            await ReloadDropdowns(supplier);
-            return View(supplier);
-        }
-
-        var success = await _service.Edit(id, supplier);
-        if (!success)
-        {
-            ModelState.AddModelError("", "Failed to update supplier");
-            await ReloadDropdowns(supplier);
-            return View(supplier);
-        }
-        return RedirectToAction("Index");
+        await ReloadDropdowns(supplier);
+        return View(supplier);
     }
+
+    if (supplier.Products.Count != supplier.TotalProducts)
+    {
+        ModelState.AddModelError("", $"Please ensure exactly {supplier.TotalProducts} product(s). You have {supplier.Products.Count}.");
+        await ReloadDropdowns(supplier);
+        return View(supplier);
+    }
+
+    var (success, error) = await _service.Edit(id, supplier);
+    if (!success)
+    {
+        ModelState.AddModelError("", $"Failed to update supplier: {error}");
+        await ReloadDropdowns(supplier);
+        return View(supplier);
+    }
+    return RedirectToAction("Index");
+}
     [HttpGet]
     public async Task<IActionResult> Add()
     {

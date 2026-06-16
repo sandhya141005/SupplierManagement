@@ -1,4 +1,3 @@
-
 @model SupplierManagement.Web.Models.SupplierViewModel
 @{
     ViewData["Title"] = "Edit Supplier";
@@ -21,15 +20,15 @@
         </div>
     }
 
-   @using (Html.BeginForm(
-    "Edit",
-    "Supplier",
-    new { id = Model.SupplierId },
-    FormMethod.Post,
-    null,
-    new { autocomplete = "off",id="editForm" }
-))
-{
+    @using (Html.BeginForm(
+     "Edit",
+     "Supplier",
+     new { id = Model.SupplierId },
+     FormMethod.Post,
+     null,
+     new { autocomplete = "off", id = "editForm" }
+ ))
+    {
         @Html.HiddenFor(m => m.SupplierId)
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:0 1.25rem;">
@@ -47,7 +46,14 @@
 
             <div class="form-group">
                 @Html.LabelFor(m => m.TotalProducts, "Total Products")
-                @Html.TextBoxFor(m => m.TotalProducts, new { placeholder = "0", id = "TotalProducts", type = "number", min = "1" })
+                @Html.TextBoxFor(m => m.TotalProducts, new
+                {
+                    placeholder = "0",
+                    id = "TotalProducts",
+                    type = "number",
+                    min =
+  "1"
+                })
                 @Html.ValidationMessageFor(m => m.TotalProducts, "", new { style = "color:#B71C1C;font-size:0.8rem;" })
             </div>
 
@@ -101,12 +107,15 @@
 
         <hr class="divider" />
 
-        <h3>Products <span id="productCountLabel" style="font-size:0.85rem; color:var(--rc-hint); font-weight:400;"></span></h3>
+        <h3>Products <span id="productCountLabel" style="font-size:0.85rem; color:var(--rc-hint); font-weight:400;"></span>
+        </h3>
         <div id="productsContainer">
             @for (int i = 0; i < Model.Products.Count; i++)
             {
-                <div class="product-card" data-product-id="@Model.Products[i].ProductId" style="border:1px solid #ddd; border-radius:8px; padding:12px; margin-bottom:10px; position:relative;">
-                    <button type="button" class="btn-danger-rc btn-sm removeProductBtn" style="position:absolute; top:8px; right:8px;">&times;</button>
+                <div class="product-card" data-product-id="@Model.Products[i].ProductId"
+                     style="border:1px solid #ddd; border-radius:8px; padding:12px; margin-bottom:10px; position:relative;">
+                    <button type="button" class="btn-danger-rc btn-sm removeProductBtn"
+                            style="position:absolute; top:8px; right:8px;">&times;</button>
                     <input type="hidden" class="prod-id" value="@Model.Products[i].ProductId" />
                     <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:0 1rem;">
                         <div class="form-group">
@@ -115,15 +124,18 @@
                         </div>
                         <div class="form-group">
                             <label>Price</label>
-                            <input class="prod-price" value="@Model.Products[i].Price" placeholder="Price" type="number" step="0.01" min="0" />
+                            <input class="prod-price" value="@Model.Products[i].Price" placeholder="Price" type="number"
+                                   step="0.01" min="0" />
                         </div>
                         <div class="form-group">
                             <label>Discount</label>
-                            <input class="prod-discount" value="@Model.Products[i].Discount" placeholder="Discount" type="number" step="0.01" min="0" />
+                            <input class="prod-discount" value="@Model.Products[i].Discount" placeholder="Discount"
+                                   type="number" step="0.01" min="0" />
                         </div>
                         <div class="form-group">
                             <label>Available Stock</label>
-                            <input class="prod-stock" value="@Model.Products[i].AvailableStock" placeholder="Stock" type="number" min="0" />
+                            <input class="prod-stock" value="@Model.Products[i].AvailableStock" placeholder="Stock"
+                                   type="number" min="0" />
                         </div>
                         <div class="form-group" style="grid-column:1/-1;">
                             <label>Category</label>
@@ -217,33 +229,33 @@
 
             const category = document.getElementById("CatalogType").value;
             const html = `
-                <div class="product-card" data-product-id="0" style="border:1px solid #ddd; border-radius:8px; padding:12px; margin-bottom:10px; position:relative;">
-                    <button type="button" class="btn-danger-rc btn-sm removeProductBtn" style="position:absolute; top:8px; right:8px;">&times;</button>
-                    <input type="hidden" class="prod-id" value="0" />
-                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:0 1rem;">
-                        <div class="form-group">
-                            <label>Product Name</label>
-                            <input class="prod-name" placeholder="Product Name" />
-                        </div>
-                        <div class="form-group">
-                            <label>Price</label>
-                            <input class="prod-price" placeholder="Price" type="number" step="0.01" min="0" />
-                        </div>
-                        <div class="form-group">
-                            <label>Discount</label>
-                            <input class="prod-discount" placeholder="Discount" type="number" step="0.01" min="0" value="0" />
-                        </div>
-                        <div class="form-group">
-                            <label>Available Stock</label>
-                            <input class="prod-stock" placeholder="Stock" type="number" min="0" />
-                        </div>
-                        <div class="form-group" style="grid-column:1/-1;">
-                            <label>Category</label>
-                            <input class="prod-category" value="${category}" readonly />
+                    <div class="product-card" data-product-id="0" style="border:1px solid #ddd; border-radius:8px; padding:12px; margin-bottom:10px; position:relative;">
+                        <button type="button" class="btn-danger-rc btn-sm removeProductBtn" style="position:absolute; top:8px; right:8px;">&times;</button>
+                        <input type="hidden" class="prod-id" value="0" />
+                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:0 1rem;">
+                            <div class="form-group">
+                                <label>Product Name</label>
+                                <input class="prod-name" placeholder="Product Name" />
+                            </div>
+                            <div class="form-group">
+                                <label>Price</label>
+                                <input class="prod-price" placeholder="Price" type="number" step="0.01" min="0" />
+                            </div>
+                            <div class="form-group">
+                                <label>Discount</label>
+                                <input class="prod-discount" placeholder="Discount" type="number" step="0.01" min="0" value="0" />
+                            </div>
+                            <div class="form-group">
+                                <label>Available Stock</label>
+                                <input class="prod-stock" placeholder="Stock" type="number" min="0" />
+                            </div>
+                            <div class="form-group" style="grid-column:1/-1;">
+                                <label>Category</label>
+                                <input class="prod-category" value="${category}" readonly />
+                            </div>
                         </div>
                     </div>
-                </div>
-            `;
+                `;
             document.getElementById("productsContainer").insertAdjacentHTML("beforeend", html);
             updateProductCountLabel();
         });
@@ -278,7 +290,6 @@
                 alert("At least one product is required");
                 return;
             }
-
             if (cards.length !== total) {
                 e.preventDefault();
                 if (cards.length < total) {
@@ -288,10 +299,7 @@
                 }
                 return;
             }
-
-            // Clear any previously injected hidden inputs (in case of repeated submit attempts)
             document.getElementById("hiddenInputsContainer").innerHTML = "";
-
             const hiddenContainer = document.getElementById("hiddenInputsContainer");
             let hasError = false;
 
@@ -343,7 +351,7 @@
                 hiddenContainer.innerHTML = "";
                 return;
             }
-
+//why hidden? server shud know which products were removed so it can delete them from db. we cant send that info in json or formdata.
             deletedProductIds.forEach((id, idx) => {
                 const input = document.createElement('input');
                 input.type = 'hidden';

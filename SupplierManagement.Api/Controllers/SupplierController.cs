@@ -88,20 +88,21 @@ public class SupplierController : ControllerBase
 
             _mapper.Map(dto, supp);
 
-            // Remove deleted products from the in-memory graph too,
-            // so repository's incomingIds calc reflects deletions
+           
             if (dto.DeletedProductIds != null && dto.DeletedProductIds.Count > 0)
             {
-                supp.Products = supp.Products
-                    .Where(p => !dto.DeletedProductIds.Contains(p.ProductId))
+                var toRemove = supp.Products
+                    .Where(p => dto.DeletedProductIds.Contains(p.ProductId))
                     .ToList();
+
+                foreach (var p in toRemove)
+                {
+                    supp.Products.Remove(p);
+                }
             }
 
-            // Map new products (ProductId == 0) and keep existing ones (ProductId > 0) as-is from supp
-            // but update their scalar values from dto first
             if (dto.Products != null)
             {
-                var updatedList = new List<Product>();
                 foreach (var pDto in dto.Products)
                 {
                     if (pDto.ProductId > 0)
@@ -114,17 +115,23 @@ public class SupplierController : ControllerBase
                             existing.Price = pDto.Price;
                             existing.Discount = pDto.Discount;
                             existing.AvailableStock = pDto.AvailableStock;
-                            updatedList.Add(existing);
                         }
                     }
                     else
                     {
-                        var newProduct = _mapper.Map<Product>(pDto);
-                        newProduct.Category = string.IsNullOrWhiteSpace(pDto.Category) ? dto.CatalogType : pDto.Category;
-                        updatedList.Add(newProduct);
+                        var newProduct = new Product
+                        {
+                            ProductName = pDto.ProductName,
+                            Category = string.IsNullOrWhiteSpace(pDto.Category) ? dto.CatalogType : pDto.Category,
+                            Price = pDto.Price,
+                            Discount = pDto.Discount,
+                            AvailableStock = pDto.AvailableStock,
+                            CreatedDate = DateTime.Now,
+                            SupplierId = supp.SupplierId
+                        };
+                        supp.Products.Add(newProduct);
                     }
                 }
-                supp.Products = updatedList;
             }
 
             _service.Edit(supp);
@@ -158,7 +165,7 @@ public class SupplierController : ControllerBase
             return Ok("Added successfully");
         }
     }*/
-    
+
     [HttpPost]
     public IActionResult Add(SupplierDTO dto)
     {

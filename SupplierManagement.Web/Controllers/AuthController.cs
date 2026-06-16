@@ -20,6 +20,7 @@ public class AuthController : Controller
             model.ErrorMessage = "Invalid email or password.";
             return View(model);
         }
+        HttpContext.Session.Clear();
         HttpContext.Session.SetString("Role", user.Role);
         HttpContext.Session.SetString("UserName", user.FirstName);
         return RedirectToAction("Index", "Supplier");
@@ -47,7 +48,6 @@ public class AuthController : Controller
             }
         }
 
-
         if (!ModelState.IsValid)
         {
             model.Countries = await _service.GetCountries();
@@ -58,7 +58,6 @@ public class AuthController : Controller
         var (success, errormsg) = await _service.Register(model);
         if (!success)
         {
-           // model.ErrorMessage = "Registration failed. Email may already exist.";
             model.ErrorMessage = errormsg;
             model.Countries = await _service.GetCountries();
             model.States = await _service.GetStates(model.CountryId);
@@ -67,6 +66,7 @@ public class AuthController : Controller
         }
         return RedirectToAction("Login");
     }
+
     [HttpGet]
     public async Task<IActionResult> GetStates(int countryId)
     {
@@ -80,4 +80,14 @@ public class AuthController : Controller
         var cities = await _service.GetCities(stateId);
         return Json(cities);
     }
+
+    [HttpPost]
+    public IActionResult Logout()
+    {
+        HttpContext.Session.Clear();
+        return RedirectToAction("Login");
+    }
+
+    [HttpGet]
+    public IActionResult AccessDenied() => View();
 }

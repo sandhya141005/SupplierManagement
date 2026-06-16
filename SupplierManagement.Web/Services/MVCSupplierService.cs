@@ -28,11 +28,16 @@ public class MVCSupplierService
         var result = await _http.GetFromJsonAsync<SupplierViewModel>($"api/supplier/{id}");
         return result;
     }
-    public async Task<bool> Edit(int id, SupplierViewModel supplier)
+    public async Task<(bool Success, string Error)> Edit(int id, SupplierViewModel supplier)
+{
+    var result = await _http.PutAsJsonAsync($"api/supplier/{supplier.SupplierId}", supplier);
+    if (!result.IsSuccessStatusCode)
     {
-        var result = await _http.PutAsJsonAsync($"api/supplier/{supplier.SupplierId}", supplier);
-        return result.IsSuccessStatusCode;
+        var error = await result.Content.ReadAsStringAsync();
+        return (false, error);
     }
+    return (true, "");
+}
     public async Task<(bool Success, String Error)> Add(SupplierViewModel supplier)
     {
         var result = await _http.PostAsJsonAsync("api/supplier", supplier);
