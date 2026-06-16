@@ -14,6 +14,7 @@ public class SupplierDTO
     public string? ContactNo { get; set; }
     public int CountryId { get; set; }
     public int StateId { get; set; }
-    public int CityId { get; set; }     // ← add
+    public int CityId { get; set; }
     public List<ProductDTO> Products { get; set; } = new();
+    public List<int> DeletedProductIds { get; set; } = new();
 }

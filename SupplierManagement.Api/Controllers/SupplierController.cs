@@ -80,30 +80,53 @@ public class SupplierController : ControllerBase
     [HttpPut("{id}")]
     public IActionResult Edit(int id, SupplierDTO dto)
     {
-        /*try
-        {
-            var supp = _service.GetById(id);
-            if (supp == null)
-                return NotFound("Supplier not found");
-            supp.CompanyName = dto.CompanyName;
-            supp.TotalProducts = dto.TotalProducts;
-            supp.CatalogType = dto.CatalogType;
-            supp.PaymentMethodsAllowed = dto.PaymentMethodsAllowed;
-            supp.ContactNo = dto.ContactNo;
-            _service.Edit(supp);
-            return Ok("Edited successfully");
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        */
         try
         {
             var supp = _service.GetById(id);
             if (supp == null)
                 return NotFound("Supplier not found");
+
             _mapper.Map(dto, supp);
+
+            // Remove deleted products from the in-memory graph too,
+            // so repository's incomingIds calc reflects deletions
+            if (dto.DeletedProductIds != null && dto.DeletedProductIds.Count > 0)
+            {
+                supp.Products = supp.Products
+                    .Where(p => !dto.DeletedProductIds.Contains(p.ProductId))
+                    .ToList();
+            }
+
+            // Map new products (ProductId == 0) and keep existing ones (ProductId > 0) as-is from supp
+            // but update their scalar values from dto first
+            if (dto.Products != null)
+            {
+                var updatedList = new List<Product>();
+                foreach (var pDto in dto.Products)
+                {
+                    if (pDto.ProductId > 0)
+                    {
+                        var existing = supp.Products.FirstOrDefault(p => p.ProductId == pDto.ProductId);
+                        if (existing != null)
+                        {
+                            existing.ProductName = pDto.ProductName;
+                            existing.Category = string.IsNullOrWhiteSpace(pDto.Category) ? dto.CatalogType : pDto.Category;
+                            existing.Price = pDto.Price;
+                            existing.Discount = pDto.Discount;
+                            existing.AvailableStock = pDto.AvailableStock;
+                            updatedList.Add(existing);
+                        }
+                    }
+                    else
+                    {
+                        var newProduct = _mapper.Map<Product>(pDto);
+                        newProduct.Category = string.IsNullOrWhiteSpace(pDto.Category) ? dto.CatalogType : pDto.Category;
+                        updatedList.Add(newProduct);
+                    }
+                }
+                supp.Products = updatedList;
+            }
+
             _service.Edit(supp);
             return Ok("Edited successfully");
         }
@@ -135,7 +158,7 @@ public class SupplierController : ControllerBase
             return Ok("Added successfully");
         }
     }*/
-    [HttpPost]
+    
     [HttpPost]
     public IActionResult Add(SupplierDTO dto)
     {

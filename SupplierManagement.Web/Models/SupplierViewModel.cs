@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace SupplierManagement.Web.Models;
+
 public class SupplierViewModel
 {
     public int SupplierId { get; set; }
@@ -13,7 +14,6 @@ public class SupplierViewModel
     public int TotalProducts { get; set; }
     [Required(ErrorMessage = "Catalog type is required")]
     public string CatalogType { get; set; } = "";
-    //[Required(ErrorMessage = "Payment methods allowed is required")]
     [ValidateNever]
     public string PaymentMethodsAllowed { get; set; } = "";
     [Required(ErrorMessage = "Select at least one payment method")]
@@ -40,6 +40,9 @@ public class SupplierViewModel
     public List<SelectListItem> States { get; set; } = new();
     [ValidateNever]
     public List<SelectListItem> Cities { get; set; } = new();
-    [ValidateNever]
+
     public List<ProductViewModel> Products { get; set; } = new();
+
+    [ValidateNever]
+    public List<int> DeletedProductIds { get; set; } = new();
 }

@@ -1,3 +1,4 @@
+
 @model SupplierManagement.Web.Models.SupplierViewModel
 @{
     ViewData["Title"] = "Edit Supplier";
@@ -10,33 +11,49 @@
     {
         <div class="error-message">@Model.ErrorMessage</div>
     }
-
-    @using (Html.BeginForm("Edit", "Supplier", new { id = Model.SupplierId }, FormMethod.Post))
+    @if (!ViewData.ModelState.IsValid)
     {
+        <div class="error-message">
+            @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <div>@err.ErrorMessage</div>
+            }
+        </div>
+    }
+
+   @using (Html.BeginForm(
+    "Edit",
+    "Supplier",
+    new { id = Model.SupplierId },
+    FormMethod.Post,
+    null,
+    new { autocomplete = "off",id="editForm" }
+))
+{
         @Html.HiddenFor(m => m.SupplierId)
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:0 1.25rem;">
             <div class="form-group" style="grid-column:1/-1;">
                 @Html.LabelFor(m => m.CompanyName, "Company Name")
-                @Html.TextBoxFor(m => m.CompanyName)
+                @Html.TextBoxFor(m => m.CompanyName, new { placeholder = "e.g. Artisan Goods Co." })
                 @Html.ValidationMessageFor(m => m.CompanyName, "", new { style = "color:#B71C1C;font-size:0.8rem;" })
             </div>
 
             <div class="form-group">
                 @Html.LabelFor(m => m.CatalogType, "Catalog Type")
-                @Html.TextBoxFor(m => m.CatalogType)
+                @Html.TextBoxFor(m => m.CatalogType, new { placeholder = "e.g. Electronics", id = "CatalogType" })
                 @Html.ValidationMessageFor(m => m.CatalogType, "", new { style = "color:#B71C1C;font-size:0.8rem;" })
             </div>
 
             <div class="form-group">
                 @Html.LabelFor(m => m.TotalProducts, "Total Products")
-                @Html.TextBoxFor(m => m.TotalProducts)
+                @Html.TextBoxFor(m => m.TotalProducts, new { placeholder = "0", id = "TotalProducts", type = "number", min = "1" })
                 @Html.ValidationMessageFor(m => m.TotalProducts, "", new { style = "color:#B71C1C;font-size:0.8rem;" })
             </div>
 
             <div class="form-group" style="grid-column:1/-1;">
                 @Html.LabelFor(m => m.ContactNo, "Contact Number")
-                @Html.TextBoxFor(m => m.ContactNo)
+                @Html.TextBoxFor(m => m.ContactNo, new { placeholder = "Phone number" })
                 @Html.ValidationMessageFor(m => m.ContactNo, "", new { style = "color:#B71C1C;font-size:0.8rem;" })
             </div>
         </div>
@@ -82,10 +99,57 @@
             </div>
         </div>
 
+        <hr class="divider" />
+
+        <h3>Products <span id="productCountLabel" style="font-size:0.85rem; color:var(--rc-hint); font-weight:400;"></span></h3>
+        <div id="productsContainer">
+            @for (int i = 0; i < Model.Products.Count; i++)
+            {
+                <div class="product-card" data-product-id="@Model.Products[i].ProductId" style="border:1px solid #ddd; border-radius:8px; padding:12px; margin-bottom:10px; position:relative;">
+                    <button type="button" class="btn-danger-rc btn-sm removeProductBtn" style="position:absolute; top:8px; right:8px;">&times;</button>
+                    <input type="hidden" class="prod-id" value="@Model.Products[i].ProductId" />
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:0 1rem;">
+                        <div class="form-group">
+                            <label>Product Name</label>
+                            <input class="prod-name" value="@Model.Products[i].ProductName" placeholder="Product Name" />
+                        </div>
+                        <div class="form-group">
+                            <label>Price</label>
+                            <input class="prod-price" value="@Model.Products[i].Price" placeholder="Price" type="number" step="0.01" min="0" />
+                        </div>
+                        <div class="form-group">
+                            <label>Discount</label>
+                            <input class="prod-discount" value="@Model.Products[i].Discount" placeholder="Discount" type="number" step="0.01" min="0" />
+                        </div>
+                        <div class="form-group">
+                            <label>Available Stock</label>
+                            <input class="prod-stock" value="@Model.Products[i].AvailableStock" placeholder="Stock" type="number" min="0" />
+                        </div>
+                        <div class="form-group" style="grid-column:1/-1;">
+                            <label>Category</label>
+                            <input class="prod-category" value="@Model.Products[i].Category" readonly />
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <button type="button" id="addProductBtn" class="btn-primary-rc" style="margin-top:8px;">
+            + Add Product
+        </button>
+
+        <!-- Hidden inputs injected before submit -->
+        <div id="hiddenInputsContainer"></div>
+
         <div class="form-actions">
             <button type="submit">Save Changes</button>
-            @Html.ActionLink("Cancel", "Index", "Supplier", null,
-               new { @class = "btn-secondary-rc" })
+            @Html.ActionLink(
+                "Cancel",
+                "Index",
+                "Supplier",
+                null,
+                new { @class = "btn-secondary-rc" }
+            )
         </div>
     }
 </div>
@@ -124,5 +188,171 @@
                     });
                 });
         });
+
+        const deletedProductIds = [];
+
+        function getProductCardCount() {
+            return document.querySelectorAll('#productsContainer .product-card').length;
+        }
+
+        function updateProductCountLabel() {
+            const total = parseInt(document.getElementById("TotalProducts").value, 10);
+            const label = isNaN(total) ? '?' : total;
+            document.getElementById("productCountLabel").textContent = `(${getProductCardCount()} / ${label} added)`;
+        }
+
+        document.getElementById("addProductBtn").addEventListener("click", function () {
+            const rawValue = document.getElementById("TotalProducts").value;
+            const totalProducts = parseInt(rawValue, 10);
+
+            if (rawValue === "" || isNaN(totalProducts) || totalProducts <= 0) {
+                alert("Please enter the number of products first");
+                return;
+            }
+
+            if (getProductCardCount() >= totalProducts) {
+                alert("Maximum products reached");
+                return;
+            }
+
+            const category = document.getElementById("CatalogType").value;
+            const html = `
+                <div class="product-card" data-product-id="0" style="border:1px solid #ddd; border-radius:8px; padding:12px; margin-bottom:10px; position:relative;">
+                    <button type="button" class="btn-danger-rc btn-sm removeProductBtn" style="position:absolute; top:8px; right:8px;">&times;</button>
+                    <input type="hidden" class="prod-id" value="0" />
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:0 1rem;">
+                        <div class="form-group">
+                            <label>Product Name</label>
+                            <input class="prod-name" placeholder="Product Name" />
+                        </div>
+                        <div class="form-group">
+                            <label>Price</label>
+                            <input class="prod-price" placeholder="Price" type="number" step="0.01" min="0" />
+                        </div>
+                        <div class="form-group">
+                            <label>Discount</label>
+                            <input class="prod-discount" placeholder="Discount" type="number" step="0.01" min="0" value="0" />
+                        </div>
+                        <div class="form-group">
+                            <label>Available Stock</label>
+                            <input class="prod-stock" placeholder="Stock" type="number" min="0" />
+                        </div>
+                        <div class="form-group" style="grid-column:1/-1;">
+                            <label>Category</label>
+                            <input class="prod-category" value="${category}" readonly />
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById("productsContainer").insertAdjacentHTML("beforeend", html);
+            updateProductCountLabel();
+        });
+
+        document.getElementById("productsContainer").addEventListener("click", function (e) {
+            if (e.target.classList.contains("removeProductBtn")) {
+                const card = e.target.closest(".product-card");
+                const productId = parseInt(card.querySelector(".prod-id").value, 10);
+                if (productId > 0) {
+                    deletedProductIds.push(productId);
+                }
+                card.remove();
+                updateProductCountLabel();
+            }
+        });
+
+        document.getElementById("TotalProducts").addEventListener("input", updateProductCountLabel);
+
+        // Before submit: validate count, then build hidden Products[i].* and DeletedProductIds[] inputs
+        document.getElementById("editForm").addEventListener("submit", function (e) {
+            const total = parseInt(document.getElementById("TotalProducts").value, 10);
+            const cards = document.querySelectorAll('#productsContainer .product-card');
+
+            if (isNaN(total) || total <= 0) {
+                e.preventDefault();
+                alert("Please enter the number of products");
+                return;
+            }
+
+            if (cards.length === 0) {
+                e.preventDefault();
+                alert("At least one product is required");
+                return;
+            }
+
+            if (cards.length !== total) {
+                e.preventDefault();
+                if (cards.length < total) {
+                    alert(`Number of products mentioned (${total}) is greater than the actual number of products (${cards.length}). Please add ${total - cards.length} more or update Total Products.`);
+                } else {
+                    alert(`Number of products mentioned (${total}) is less than the actual number of products (${cards.length}). Please remove ${cards.length - total} or update Total Products.`);
+                }
+                return;
+            }
+
+            // Clear any previously injected hidden inputs (in case of repeated submit attempts)
+            document.getElementById("hiddenInputsContainer").innerHTML = "";
+
+            const hiddenContainer = document.getElementById("hiddenInputsContainer");
+            let hasError = false;
+
+            cards.forEach((card, idx) => {
+                const productId = card.querySelector(".prod-id").value;
+                const name = card.querySelector(".prod-name").value.trim();
+                const price = card.querySelector(".prod-price").value;
+                const discount = card.querySelector(".prod-discount").value || "0";
+                const stock = card.querySelector(".prod-stock").value;
+                const category = card.querySelector(".prod-category").value;
+
+                if (!name) {
+                    hasError = true;
+                    alert(`Product #${idx + 1}: name is required`);
+                    return;
+                }
+                if (!price || parseFloat(price) <= 0) {
+                    hasError = true;
+                    alert(`Product #${idx + 1}: price must be greater than 0`);
+                    return;
+                }
+                if (stock === "" || parseInt(stock, 10) < 0) {
+                    hasError = true;
+                    alert(`Product #${idx + 1}: stock cannot be negative`);
+                    return;
+                }
+
+                const fields = {
+                    ProductId: productId,
+                    ProductName: name,
+                    Category: category,
+                    Price: price,
+                    Discount: discount,
+                    AvailableStock: stock,
+                    SupplierId: '@Model.SupplierId'
+                };
+
+                Object.keys(fields).forEach(key => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = `Products[${idx}].${key}`;
+                    input.value = fields[key];
+                    hiddenContainer.appendChild(input);
+                });
+            });
+
+            if (hasError) {
+                e.preventDefault();
+                hiddenContainer.innerHTML = "";
+                return;
+            }
+
+            deletedProductIds.forEach((id, idx) => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = `DeletedProductIds[${idx}]`;
+                input.value = id;
+                hiddenContainer.appendChild(input);
+            });
+        });
+
+        updateProductCountLabel();
     </script>
 }
