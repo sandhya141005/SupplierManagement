@@ -92,13 +92,13 @@ public async Task<IActionResult> Edit(int id, SupplierViewModel supplier)
 
         supplier.PaymentMethodsAllowed = string.Join(", ", supplier.SelectedPaymentMethods);
 
-        // strip empty trailing rows browser may have submitted
+        
         supplier.Products = supplier.Products.Where(p => !string.IsNullOrWhiteSpace(p.ProductName)).ToList();
         if (!ModelState.IsValid)
         {
             await ReloadDropdowns(supplier);
             return View(supplier);
-        }
+        }/*
         if (supplier.Products.Count == 0)
         {
             ModelState.AddModelError("", "At least one product is required");
@@ -126,7 +126,7 @@ public async Task<IActionResult> Edit(int id, SupplierViewModel supplier)
                 ModelState.AddModelError("", $"Stock for '{p.ProductName}' cannot be negative.");
             }
         }
-
+*/
         if (!ModelState.IsValid)
         {
             await ReloadDropdowns(supplier);
