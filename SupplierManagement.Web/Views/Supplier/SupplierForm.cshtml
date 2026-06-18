@@ -1,10 +1,10 @@
 @model SupplierManagement.Web.Models.SupplierViewModel
 <!--doubt-only one model then how product-->
 @{
-    bool isEdit = ViewBag.IsEdit == true;
+    bool isEdit =Model.SupplierId > 0;
     string formTitle = isEdit ? "Edit Supplier" : "Add Supplier";
     string formAction = isEdit ? "Edit" : "Add";
-    string submitLabel = isEdit ? "Edit" : "Add";
+    string submitLabel = isEdit ? "Save changes" : "Add";
     object routeValues = isEdit ? (object)new { id = Model.SupplierId } : null;
 }
 <div class="form-card form-card-wide">

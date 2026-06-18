@@ -30,7 +30,7 @@ public class SupplierController : Controller
         supplier.Countries = await _service.GetCountries();
         supplier.States = supplier.CountryId > 0 ? await _service.GetStates(supplier.CountryId) : new();
         supplier.Cities = supplier.StateId > 0 ? await _service.GetCities(supplier.StateId) : new();
-        return View(supplier);
+        return View("SupplierForm",supplier);
     }
    
    [HttpPost]
@@ -53,14 +53,14 @@ public async Task<IActionResult> Edit(int id, SupplierViewModel supplier)
     if (!ModelState.IsValid)
     {
         await ReloadDropdowns(supplier);
-        return View(supplier);
+        return View("SupplierForm",supplier);
     }
 
     if (supplier.Products.Count != supplier.TotalProducts)
     {
         ModelState.AddModelError("", $"Please ensure exactly {supplier.TotalProducts} product(s). You have {supplier.Products.Count}.");
         await ReloadDropdowns(supplier);
-        return View(supplier);
+        return View("SupplierForm",supplier);
     }
 
     var (success, error) = await _service.Edit(id, supplier);
@@ -68,7 +68,7 @@ public async Task<IActionResult> Edit(int id, SupplierViewModel supplier)
     {
         ModelState.AddModelError("", $"Failed to update supplier: {error}");
         await ReloadDropdowns(supplier);
-        return View(supplier);
+        return View("SupplierForm",supplier);
     }
     return RedirectToAction("Index");
 }
@@ -76,61 +76,25 @@ public async Task<IActionResult> Edit(int id, SupplierViewModel supplier)
     public async Task<IActionResult> Add()
     {
         var model = new SupplierViewModel { Countries = await _service.GetCountries() };
-        return View(model);
+        return View("SupplierForm",model);
     }
 
     [HttpPost]
     public async Task<IActionResult> Add(SupplierViewModel supplier)
     {
-       /* ModelState.Remove("PaymentMethodsAllowed");
-        ModelState.Remove("ErrorMessage");
-        ModelState.Remove("CreatedDate");
-        ModelState.Remove("Country");
-        ModelState.Remove("State");
-        ModelState.Remove("City");
-        ModelState.Remove("ContactNo");*/
 
         supplier.PaymentMethodsAllowed = string.Join(", ", supplier.SelectedPaymentMethods);
-
         
         supplier.Products = supplier.Products.Where(p => !string.IsNullOrWhiteSpace(p.ProductName)).ToList();
         if (!ModelState.IsValid)
         {
             await ReloadDropdowns(supplier);
-            return View(supplier);
-        }/*
-        if (supplier.Products.Count == 0)
-        {
-            ModelState.AddModelError("", "At least one product is required");
-            await ReloadDropdowns(supplier);
-            return View(supplier);
+            return View("SupplierForm",supplier);
         }
-
-        if (supplier.Products.Count != supplier.TotalProducts)
-        {
-            ModelState.AddModelError("", $"Please add exactly {supplier.TotalProducts} product(s). You added {supplier.Products.Count}.");
-            await ReloadDropdowns(supplier);
-            return View(supplier);
-        }
-
-        foreach (var p in supplier.Products)
-        {
-            if (string.IsNullOrWhiteSpace(p.Category))
-                p.Category = supplier.CatalogType;
-            if (p.Price <= 0)
-            {
-                ModelState.AddModelError("", $"Price for '{p.ProductName}' must be greater than 0.");
-            }
-            if (p.AvailableStock < 0)
-            {
-                ModelState.AddModelError("", $"Stock for '{p.ProductName}' cannot be negative.");
-            }
-        }
-*/
         if (!ModelState.IsValid)
         {
             await ReloadDropdowns(supplier);
-            return View(supplier);
+            return View("SupplierForm",supplier);
         }
 
         var (success, error) = await _service.Add(supplier);
@@ -138,7 +102,7 @@ public async Task<IActionResult> Edit(int id, SupplierViewModel supplier)
         {
             ModelState.AddModelError("", error);
             await ReloadDropdowns(supplier);
-            return View(supplier);
+            return View("SupplierForm",supplier);
         }
 
         return RedirectToAction("Index");
