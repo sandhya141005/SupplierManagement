@@ -1,7 +1,7 @@
 @model SupplierManagement.Web.Models.SupplierViewModel
 <!--doubt-only one model then how product-->
 @{
-    bool isEdit =Model.SupplierId > 0;
+    bool isEdit = Model.SupplierId > 0;
     string formTitle = isEdit ? "Edit Supplier" : "Add Supplier";
     string formAction = isEdit ? "Edit" : "Add";
     string submitLabel = isEdit ? "Save changes" : "Add";
@@ -23,6 +23,7 @@
     @using (Html.BeginForm(formAction, "Supplier", routeValues, FormMethod.Post, null, new
     {
         autocomplete = "off",
+        novalidate = "novalidate",
         id =
  "supplierForm"
     }))
@@ -112,34 +113,96 @@
                 {
                     <div class="product-card" data-product-id="@Model.Products[i].ProductId"
                          style="border:1px solid #ddd; border-radius:8px; padding:12px; margin-bottom:10px; position:relative;">
-                        <button type="button" class="btn-danger-rc btn-sm removeProductBtn"
-                                style="position:absolute; top:8px; right:8px;">&times;</button>
-                        <input type="hidden" class="prod-id" value="@Model.Products[i].ProductId" />
-                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:0 1rem;">
-                            <div class="form-group">
-                                <label>Product Name</label>
-                                <input class="prod-name" value="@Model.Products[i].ProductName" placeholder="Product Name" />
 
-                            </div>
+                        <button type="button" class="btn-danger-rc btn-sm removeProductBtn"
+                                style="position:absolute; top:8px; right:8px;">
+                            &times;
+                        </button>
+
+                        @Html.HiddenFor(m => m.Products[i].ProductId, new { @class = "prod-id" })
+                        @Html.HiddenFor(m => m.Products[i].SupplierId)
+
+                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:0 1rem;">
+
                             <div class="form-group">
-                                <label>Price</label>
-                                <input class="prod-price" value="@Model.Products[i].Price" placeholder="Price" type="number"
-                                       step="0.01" min="0" />
+                                @Html.LabelFor(m => m.Products[i].ProductName)
+
+                                @Html.TextBoxFor(m => m.Products[i].ProductName,
+                                    new
+                                    {
+                                        @class = "prod-name",
+                                        placeholder = "Product Name"
+                                    })
+
+                                @Html.ValidationMessageFor(m => m.Products[i].ProductName,
+                                    "",
+                                    new { style = "color:#B71C1C;font-size:0.8rem;" })
                             </div>
+
                             <div class="form-group">
-                                <label>Discount</label>
-                                <input class="prod-discount" value="@Model.Products[i].Discount" placeholder="Discount"
-                                       type="number" step="0.01" min="0" />
+                                @Html.LabelFor(m => m.Products[i].Price)
+
+                                @Html.TextBoxFor(m => m.Products[i].Price,
+                                    new
+                                    {
+                                        @class = "prod-price",
+                                        type = "number",
+                                        step = "0.01",
+                                        min = "0",
+                                        placeholder = "Price"
+                                    })
+
+                                @Html.ValidationMessageFor(m => m.Products[i].Price,
+                                    "",
+                                    new { style = "color:#B71C1C;font-size:0.8rem;" })
                             </div>
+
                             <div class="form-group">
-                                <label>Available Stock</label>
-                                <input class="prod-stock" value="@Model.Products[i].AvailableStock" placeholder="Stock"
-                                       type="number" min="0" />
+                                @Html.LabelFor(m => m.Products[i].Discount)
+
+                                @Html.TextBoxFor(m => m.Products[i].Discount,
+                                    new
+                                    {
+                                        @class = "prod-discount",
+                                        type = "number",
+                                        step = "0.01",
+                                        min = "0",
+                                        placeholder = "Discount"
+                                    })
+
+                                @Html.ValidationMessageFor(m => m.Products[i].Discount,
+                                    "",
+                                    new { style = "color:#B71C1C;font-size:0.8rem;" })
                             </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Products[i].AvailableStock)
+
+                                @Html.TextBoxFor(m => m.Products[i].AvailableStock,
+                                    new
+                                    {
+                                        @class = "prod-stock",
+                                        type = "number",
+                                        min = "0",
+                                        placeholder = "Stock"
+                                    })
+
+                                @Html.ValidationMessageFor(m => m.Products[i].AvailableStock,
+                                    "",
+                                    new { style = "color:#B71C1C;font-size:0.8rem;" })
+                            </div>
+
                             <div class="form-group" style="grid-column:1/-1;">
-                                <label>Category</label>
-                                <input class="prod-category" value="@Model.Products[i].Category" readonly />
+                                @Html.LabelFor(m => m.Products[i].Category)
+
+                                @Html.TextBoxFor(m => m.Products[i].Category,
+                                    new
+                                    {
+                                        @class = "prod-category",
+                                        @readonly = "readonly"
+                                    })
                             </div>
+
                         </div>
                     </div>
                 }

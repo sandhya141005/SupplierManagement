@@ -30,53 +30,57 @@ public class SupplierController : Controller
         supplier.Countries = await _service.GetCountries();
         supplier.States = supplier.CountryId > 0 ? await _service.GetStates(supplier.CountryId) : new();
         supplier.Cities = supplier.StateId > 0 ? await _service.GetCities(supplier.StateId) : new();
-        return View("SupplierForm",supplier);
+        return View("SupplierForm", supplier);
     }
-   
-   [HttpPost]
-public async Task<IActionResult> Edit(int id, SupplierViewModel supplier)
-{
-    ModelState.Remove("PaymentMethodsAllowed");
-    ModelState.Remove("ErrorMessage");
-    ModelState.Remove("CreatedDate");
-    ModelState.Remove("Country");
-    ModelState.Remove("State");
-    ModelState.Remove("City");
-    ModelState.Remove("ContactNo");
 
-    supplier.PaymentMethodsAllowed = string.Join(", ", supplier.SelectedPaymentMethods);
-
-    supplier.Products = supplier.Products
-        .Where(p => !string.IsNullOrWhiteSpace(p.ProductName))
-        .ToList();
-
-    if (!ModelState.IsValid)
+    [HttpPost]
+    public async Task<IActionResult> Edit(int id, SupplierViewModel supplier)
     {
-        await ReloadDropdowns(supplier);
-        return View("SupplierForm",supplier);
-    }
+        ModelState.Remove("PaymentMethodsAllowed");
+        ModelState.Remove("ErrorMessage");
+        ModelState.Remove("CreatedDate");
+        ModelState.Remove("Country");
+        ModelState.Remove("State");
+        ModelState.Remove("City");
+        ModelState.Remove("ContactNo");
 
-    if (supplier.Products.Count != supplier.TotalProducts)
-    {
-        ModelState.AddModelError("", $"Please ensure exactly {supplier.TotalProducts} product(s). You have {supplier.Products.Count}.");
-        await ReloadDropdowns(supplier);
-        return View("SupplierForm",supplier);
-    }
+        supplier.PaymentMethodsAllowed = string.Join(", ", supplier.SelectedPaymentMethods);
 
-    var (success, error) = await _service.Edit(id, supplier);
-    if (!success)
-    {
-        ModelState.AddModelError("", $"Failed to update supplier: {error}");
-        await ReloadDropdowns(supplier);
-        return View("SupplierForm",supplier);
+        supplier.Products = supplier.Products
+            .Where(p => !string.IsNullOrWhiteSpace(p.ProductName))
+            .ToList();
+        for (int i = 0; i < supplier.Products.Count; i++)
+        {
+            ModelState.Remove($"Products[{i}].Category");
+            ModelState.Remove($"Products[{i}].SupplierId");
+        }
+        if (!ModelState.IsValid)
+        {
+            await ReloadDropdowns(supplier);
+            return View("SupplierForm", supplier);
+        }
+
+        if (supplier.Products.Count != supplier.TotalProducts)
+        {
+            ModelState.AddModelError("", $"Please ensure exactly {supplier.TotalProducts} product(s). You have {supplier.Products.Count}.");
+            await ReloadDropdowns(supplier);
+            return View("SupplierForm", supplier);
+        }
+
+        var (success, error) = await _service.Edit(id, supplier);
+        if (!success)
+        {
+            ModelState.AddModelError("", $"Failed to update supplier: {error}");
+            await ReloadDropdowns(supplier);
+            return View("SupplierForm", supplier);
+        }
+        return RedirectToAction("Index");
     }
-    return RedirectToAction("Index");
-}
     [HttpGet]
     public async Task<IActionResult> Add()
     {
         var model = new SupplierViewModel { Countries = await _service.GetCountries() };
-        return View("SupplierForm",model);
+        return View("SupplierForm", model);
     }
 
     [HttpPost]
@@ -84,17 +88,23 @@ public async Task<IActionResult> Edit(int id, SupplierViewModel supplier)
     {
 
         supplier.PaymentMethodsAllowed = string.Join(", ", supplier.SelectedPaymentMethods);
-        
+
         supplier.Products = supplier.Products.Where(p => !string.IsNullOrWhiteSpace(p.ProductName)).ToList();
-        if (!ModelState.IsValid)
+        // Add these in both Add POST and Edit POST, before ModelState.IsValid check
+        for (int i = 0; i < supplier.Products.Count; i++)
         {
-            await ReloadDropdowns(supplier);
-            return View("SupplierForm",supplier);
+            ModelState.Remove($"Products[{i}].Category");
+            ModelState.Remove($"Products[{i}].SupplierId");
         }
         if (!ModelState.IsValid)
         {
             await ReloadDropdowns(supplier);
-            return View("SupplierForm",supplier);
+            return View("SupplierForm", supplier);
+        }
+        if (!ModelState.IsValid)
+        {
+            await ReloadDropdowns(supplier);
+            return View("SupplierForm", supplier);
         }
 
         var (success, error) = await _service.Add(supplier);
@@ -102,7 +112,7 @@ public async Task<IActionResult> Edit(int id, SupplierViewModel supplier)
         {
             ModelState.AddModelError("", error);
             await ReloadDropdowns(supplier);
-            return View("SupplierForm",supplier);
+            return View("SupplierForm", supplier);
         }
 
         return RedirectToAction("Index");
