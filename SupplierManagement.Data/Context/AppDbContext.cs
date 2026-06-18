@@ -24,7 +24,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
         .Property(p => p.Discount)
         .HasPrecision(18, 2);
 
-    // Fix cascade paths on Supplier
+/*
     modelBuilder.Entity<Supplier>()
         .HasOne(s => s.Country)
         .WithMany()
@@ -42,6 +42,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
         .WithMany()
         .HasForeignKey(s => s.CityId)
         .OnDelete(DeleteBehavior.NoAction);
+        */
     modelBuilder.Entity<Product>()
     .HasOne(p => p.Supplier)
     .WithMany(s => s.Products)

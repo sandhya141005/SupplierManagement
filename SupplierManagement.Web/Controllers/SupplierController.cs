@@ -82,13 +82,13 @@ public async Task<IActionResult> Edit(int id, SupplierViewModel supplier)
     [HttpPost]
     public async Task<IActionResult> Add(SupplierViewModel supplier)
     {
-        ModelState.Remove("PaymentMethodsAllowed");
+       /* ModelState.Remove("PaymentMethodsAllowed");
         ModelState.Remove("ErrorMessage");
         ModelState.Remove("CreatedDate");
         ModelState.Remove("Country");
         ModelState.Remove("State");
         ModelState.Remove("City");
-        ModelState.Remove("ContactNo");
+        ModelState.Remove("ContactNo");*/
 
         supplier.PaymentMethodsAllowed = string.Join(", ", supplier.SelectedPaymentMethods);
 

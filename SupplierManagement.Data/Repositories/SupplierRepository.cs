@@ -14,7 +14,7 @@ public class SupplierRepository : ISupplierRepository
     }
     public List<Supplier> GetAll()
     {
-        return _context.Suppliers.Include(s => s.Country).Include(s => s.State).Include(s => s.City).Include(s => s.Products).ToList();
+        return _context.Suppliers.Include(s => s.Products).ToList();
     }
     public void Delete(int id)
     {
@@ -27,7 +27,7 @@ public class SupplierRepository : ISupplierRepository
     }
     public Supplier? GetById(int id)
     {
-        return _context.Suppliers.Include(s => s.Country).Include(s => s.State).Include(s => s.City).Include(s => s.Products).FirstOrDefault(s => s.SupplierId == id);
+        return _context.Suppliers.Include(s => s.Products).FirstOrDefault(s => s.SupplierId == id);
     }
     public void Edit(Supplier supplier)
     {
