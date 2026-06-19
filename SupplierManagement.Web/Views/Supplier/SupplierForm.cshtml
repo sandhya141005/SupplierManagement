@@ -16,7 +16,7 @@
     @using (Html.BeginForm(formAction, "Supplier", routeValues, FormMethod.Post, null, new
     {
         autocomplete = "off",
-        novalidate = "novalidate",
+        //novalidate = "novalidate",
         id = "supplierForm"
     }))
     {
@@ -29,7 +29,7 @@
 
             <div class="form-group" style="grid-column:1/-1;">
                 @Html.LabelFor(m => m.CompanyName, "Company Name")
-                @Html.TextBoxFor(m => m.CompanyName, new { placeholder = "e.g. Artisan Goods Co." })
+                @Html.TextBoxFor(m => m.CompanyName, new { placeholder = "e.g. Artisan Goods Co.",id="CompanyName" })
                 @Html.ValidationMessageFor(m => m.CompanyName, "", new { style = "color:#B71C1C;font-size:0.8rem;" })
             </div>
 
@@ -47,7 +47,7 @@
 
            <div class="form-group">
     @Html.LabelFor(m => m.CreatedDate, "Created Date")
-    @Html.TextBoxFor(m => m.CreatedDate, new { placeholder = "e.g. 11-Jun-2026" })
+    @Html.TextBoxFor(m => m.CreatedDate, new { placeholder = "e.g. 11-Jun-2026",id="CreatedDate" })
     @Html.ValidationMessageFor(m => m.CreatedDate, "", new { style = "color:#B71C1C;font-size:0.8rem;" })
 </div>
 
