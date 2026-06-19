@@ -8,13 +8,7 @@
     <h2>@(isAdmin ? "Manage Suppliers" : "Our Suppliers")</h2>
     @if (isAdmin)
     {
-        @Html.ActionLink(
-            "+ Add Supplier",
-            "Add",
-            "Supplier",
-            null,
-            new { @class = "btn-primary-rc" }
-        )
+        @Html.ActionLink( "+ Add Supplier", "Add","Supplier", null,new { @class = "btn-primary-rc" } )
     }
 </div>
 
@@ -27,7 +21,6 @@
 }
 else if (isAdmin)
 {
-    <!-- Admin: full table view -->
     <div class="table-card">
         <table>
             <thead>
@@ -61,7 +54,7 @@ else if (isAdmin)
                                 </span>
                             </td>
                             <td style="max-width:180px; font-size:0.82rem; color:var(--rc-hint);">@s.PaymentMethodsAllowed</td>
-                            <td style="font-size:0.85rem; color:var(--rc-hint);">@s.CreatedDate</td>
+                            @Html.Raw($"<td>{Html.Encode(s.CreatedDate)}</td>")
                             <td style="font-size:0.85rem;">@s.City, @s.State</td>
                             <td style="font-size:0.85rem;">@s.ContactNo</td>
                             <td>

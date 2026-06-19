@@ -36,14 +36,6 @@ public class SupplierController : Controller
     [HttpPost]
     public async Task<IActionResult> Edit(int id, SupplierViewModel supplier)
     {
-        ModelState.Remove("PaymentMethodsAllowed");
-        ModelState.Remove("ErrorMessage");
-        ModelState.Remove("CreatedDate");
-        ModelState.Remove("Country");
-        ModelState.Remove("State");
-        ModelState.Remove("City");
-        ModelState.Remove("ContactNo");
-
         supplier.PaymentMethodsAllowed = string.Join(", ", supplier.SelectedPaymentMethods);
 
         supplier.Products = supplier.Products
@@ -59,14 +51,14 @@ public class SupplierController : Controller
             await ReloadDropdowns(supplier);
             return View("SupplierForm", supplier);
         }
-
-        if (supplier.Products.Count != supplier.TotalProducts)
+        foreach (var p in supplier.Products)
         {
-            ModelState.AddModelError("", $"Please ensure exactly {supplier.TotalProducts} product(s). You have {supplier.Products.Count}.");
-            await ReloadDropdowns(supplier);
-            return View("SupplierForm", supplier);
+            if (!string.IsNullOrEmpty(p.CreatedDate) &&
+                DateTime.TryParse(p.CreatedDate, out var parsedDate))
+            {
+                p.CreatedDate = parsedDate.ToString("dd-MMM-yyyy");
+            }
         }
-
         var (success, error) = await _service.Edit(id, supplier);
         if (!success)
         {
@@ -90,7 +82,6 @@ public class SupplierController : Controller
         supplier.PaymentMethodsAllowed = string.Join(", ", supplier.SelectedPaymentMethods);
 
         supplier.Products = supplier.Products.Where(p => !string.IsNullOrWhiteSpace(p.ProductName)).ToList();
-        // Add these in both Add POST and Edit POST, before ModelState.IsValid check
         for (int i = 0; i < supplier.Products.Count; i++)
         {
             ModelState.Remove($"Products[{i}].Category");
@@ -101,12 +92,14 @@ public class SupplierController : Controller
             await ReloadDropdowns(supplier);
             return View("SupplierForm", supplier);
         }
-        if (!ModelState.IsValid)
+        foreach (var p in supplier.Products)
         {
-            await ReloadDropdowns(supplier);
-            return View("SupplierForm", supplier);
+            if (!string.IsNullOrEmpty(p.CreatedDate) &&
+                DateTime.TryParse(p.CreatedDate, out var parsedDate))
+            {
+                p.CreatedDate = parsedDate.ToString("dd-MMM-yyyy");
+            }
         }
-
         var (success, error) = await _service.Add(supplier);
         if (!success)
         {

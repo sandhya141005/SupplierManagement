@@ -7,34 +7,32 @@ public class ApiMappingProfile : Profile
 {
     public ApiMappingProfile()
     {
-        //check necessity of these mappings
-        //RegisterDTO,User
-        CreateMap<RegisterDTO, User>().ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.IsAdmin ? "Admin" : "User"));
-        //User.UserDTO
-        CreateMap<User, UserDTO>();
-        //SuuplierDTO,Supplier
-        CreateMap<SupplierDTO, Supplier>()
-             .ForMember(dest => dest.CreatedDate,
-                 opt => opt.MapFrom(src => DateTime.Now))
-             //.ForMember(dest => dest.Country, opt => opt.Ignore())
-            // .ForMember(dest => dest.State, opt => opt.Ignore())
-            // .ForMember(dest => dest.City, opt => opt.Ignore())
-             .ForMember(dest => dest.Products, opt => opt.Ignore());
+        CreateMap<RegisterDTO, User>()
+            .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.IsAdmin ? "Admin" : "User"));
 
-        // Supplier,SupplierDTO
+        CreateMap<User, UserDTO>();
+
+        CreateMap<SupplierDTO, Supplier>()
+            .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src =>
+                DateTime.ParseExact(src.CreatedDate, "dd-MMM-yyyy",
+                    System.Globalization.CultureInfo.InvariantCulture)))
+            .ForMember(dest => dest.Products, opt => opt.Ignore());
+
         CreateMap<Supplier, SupplierDTO>()
             .ForMember(dest => dest.CreatedDate,
                 opt => opt.MapFrom(src => src.CreatedDate.ToString("dd-MMM-yyyy")))
-            //.ForMember(dest => dest.Country,
-              //  opt => opt.MapFrom(src => src.Country != null ? src.Country.CountryName : ""))
-           // .ForMember(dest => dest.State,
-            //    opt => opt.MapFrom(src => src.State != null ? src.State.StateName : ""))
-            //.ForMember(dest => dest.City,
-              //  opt => opt.MapFrom(src => src.City != null ? src.City.CityName : ""));
-              .ForMember(dest => dest.DeletedProductIds, opt => opt.Ignore());
-        //Product,ProductDTO
-        CreateMap<Product, ProductDTO>().ReverseMap();
+            .ForMember(dest => dest.DeletedProductIds, opt => opt.Ignore());
 
-        //CreateMap<Supplier, SupplierDTO>() .ReverseMap();
+        CreateMap<Product, ProductDTO>()
+            .ForMember(dest => dest.CreatedDate,
+                opt => opt.MapFrom(src => src.CreatedDate.ToString("dd-MMM-yyyy")));
+
+        CreateMap<ProductDTO, Product>()
+            .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src =>
+                string.IsNullOrEmpty(src.CreatedDate)
+                    ? DateTime.Now
+                    : DateTime.ParseExact(src.CreatedDate, "dd-MMM-yyyy",
+                        System.Globalization.CultureInfo.InvariantCulture)));
+        
     }
 }

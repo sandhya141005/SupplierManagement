@@ -34,7 +34,10 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
-
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options => {
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    });
 var app = builder.Build();
 
 app.UseStaticFiles();

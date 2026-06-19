@@ -18,6 +18,9 @@ public class SupplierViewModel
     public string PaymentMethodsAllowed { get; set; } = "";
     [Required(ErrorMessage = "Select at least one payment method")]
     public List<string> SelectedPaymentMethods { get; set; } = new();
+    
+    [Required(ErrorMessage = "Created date is required")]
+    [RegularExpression(@"^\d{2}-[A-Za-z]{3}-\d{4}$", ErrorMessage = "Date must be in dd-Mon-yyyy format e.g. 11-Jun-2026")]
     public string CreatedDate { get; set; } = "";
     public string Country { get; set; } = "";
     public string State { get; set; } = "";

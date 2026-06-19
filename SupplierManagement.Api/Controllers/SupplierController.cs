@@ -22,22 +22,7 @@ public class SupplierController : ControllerBase
     [HttpGet]
     public IActionResult GetAll()
     {
-        /*var suppliers = _service.GetAll().Select(s => new SupplierDTO
-        {
-            SupplierId = s.SupplierId,
-            CompanyName = s.CompanyName,
-            TotalProducts = s.TotalProducts,
-            CatalogType = s.CatalogType,
-            PaymentMethodsAllowed = s.PaymentMethodsAllowed,
-            CreatedDate = s.CreatedDate.ToString("dd-MMM-yyyy"),
-            Country = s.Country?.CountryName ?? "",
-            State = s.State?.StateName ?? "",
-            City = s.City?.CityName ?? "",
-            ContactNo = s.ContactNo
-        }).ToList();
 
-        return Ok(suppliers);
-        */
         var suppliers = _service.GetAll();
         var dtos = _mapper.Map<List<SupplierDTO>>(suppliers);
         return Ok(dtos);
@@ -58,20 +43,7 @@ public class SupplierController : ControllerBase
     [HttpGet("{id}")]
     public IActionResult GetById(int id)
     {
-        /*var supp = _service.GetById(id);
-        if (supp == null)
-            return NotFound("Supplier not found");
-        var supplierDTO = new SupplierDTO
-        {
-            SupplierId = supp.SupplierId,
-            CompanyName = supp.CompanyName,
-            TotalProducts = supp.TotalProducts,
-            CatalogType = supp.CatalogType,
-            PaymentMethodsAllowed = supp.PaymentMethodsAllowed,
-            CreatedDate = supp.CreatedDate.ToString("dd-MMM-yyyy"),
-            ContactNo = supp.ContactNo
-        };
-        return Ok(supplierDTO);*/
+
         var supp = _service.GetById(id);
         if (supp == null)
             return NotFound("Supplier not found");
@@ -88,7 +60,7 @@ public class SupplierController : ControllerBase
 
             _mapper.Map(dto, supp);
 
-           
+
             if (dto.DeletedProductIds != null && dto.DeletedProductIds.Count > 0)
             {
                 var toRemove = supp.Products
@@ -115,6 +87,10 @@ public class SupplierController : ControllerBase
                             existing.Price = pDto.Price;
                             existing.Discount = pDto.Discount;
                             existing.AvailableStock = pDto.AvailableStock;
+                            if (!string.IsNullOrEmpty(pDto.CreatedDate))
+        existing.CreatedDate = DateTime.ParseExact(pDto.CreatedDate, "dd-MMM-yyyy",
+            System.Globalization.CultureInfo.InvariantCulture); // ← update date too
+
                         }
                     }
                     else
@@ -126,7 +102,10 @@ public class SupplierController : ControllerBase
                             Price = pDto.Price,
                             Discount = pDto.Discount,
                             AvailableStock = pDto.AvailableStock,
-                            CreatedDate = DateTime.Now,
+                            CreatedDate = string.IsNullOrEmpty(pDto.CreatedDate)
+                                        ? DateTime.Now
+                                        : DateTime.ParseExact(pDto.CreatedDate, "dd-MMM-yyyy",
+                System.Globalization.CultureInfo.InvariantCulture), // ← use DTO date
                             SupplierId = supp.SupplierId
                         };
                         supp.Products.Add(newProduct);
@@ -142,29 +121,6 @@ public class SupplierController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
-    // [HttpPost]
-    /*public IActionResult Add(SupplierDTO dto)
-    {
-        try
-        {
-            Supplier supplier = new Supplier;
-            {
-                CompanyName = dto.CompanyName,
-            TotalProducts = dto.TotalProducts,
-            CatalogType = dto.CatalogType,
-            PaymentMethodsAllowed = dto.PaymentMethodsAllowed,
-            CreatedDate = DateTime.Now,
-            CountryId = dto.CountryId,
-            StateId = dto.StateId,
-            CityId = dto.CityId,
-            ContactNo = dto.ContactNo
-
-
-            }
-            _service.Add(supplier);
-            return Ok("Added successfully");
-        }
-    }*/
 
     [HttpPost]
     public IActionResult Add(SupplierDTO dto)
@@ -179,7 +135,7 @@ public class SupplierController : ControllerBase
                 {
                     if (string.IsNullOrWhiteSpace(p.Category))
                         p.Category = dto.CatalogType;
-                    p.CreatedDate = DateTime.Now;
+                    //  p.CreatedDate = DateTime.Now;
                 }
             }
 
@@ -193,3 +149,10 @@ public class SupplierController : ControllerBase
     }
 
 }
+
+
+
+
+
+/////////
+/// 

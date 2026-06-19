@@ -31,6 +31,14 @@ function initializeSupplierForm(options) {
         document.getElementById("productCountLabel").textContent =
             `(${getProductCardCount()} / ${label} added)`;
     }
+    function formatDateToDDMonYYYY(dateStr) {
+        if (!dateStr) return "";
+        const d = new Date(dateStr);
+        const months = ["Jan","Feb","Mar","Apr","May","Jun",
+                        "Jul","Aug","Sep","Oct","Nov","Dec"];
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${day}-${months[d.getMonth()]}-${d.getFullYear()}`;
+     }
 
     document.getElementById('CountryId').addEventListener('change', function () {
         const countryId = this.value;
@@ -108,6 +116,10 @@ function initializeSupplierForm(options) {
                         <label>Category</label>
                         <input class="prod-category" value="${category}" readonly />
                     </div>
+                    <div class="form-group">
+                        <label>Created Date</label>
+                    <input class="prod-date" type="date" />
+        </div>
                 </div>
             </div>`;
         document.getElementById("productsContainer").insertAdjacentHTML("beforeend", html);
@@ -142,96 +154,94 @@ function initializeSupplierForm(options) {
         input.insertAdjacentElement('afterend', span);
     }
     document.getElementById("supplierForm").addEventListener("submit", function (e) {
-        clearError();
-        clearInlineErrors();
+    clearError();
+    clearInlineErrors();
 
-        const total = parseInt(document.getElementById("TotalProducts").value, 10);
-        const cards = document.querySelectorAll('#productsContainer .product-card');
+    const total = parseInt(document.getElementById("TotalProducts").value, 10);
+    const cards = document.querySelectorAll('#productsContainer .product-card');
 
-        if (isNaN(total) || total <= 0) {
-            e.preventDefault();
-            showError("Please enter the number of products");
-            return;
+    const productErrors = [];
+    if (cards.length === 0)
+        productErrors.push("At least one product is required.");
+    else if (!isNaN(total) && total > 0 && cards.length < total)
+        productErrors.push(`Add ${total - cards.length} more product(s) or update Total Products.`);
+    else if (!isNaN(total) && total > 0 && cards.length > total)
+        productErrors.push(`Remove ${cards.length - total} product(s) or update Total Products.`);
+
+    let hasProductFieldError = false;
+    cards.forEach((card) => {
+        const nameInput = card.querySelector(".prod-name");
+        const priceInput = card.querySelector(".prod-price");
+        const stockInput = card.querySelector(".prod-stock");
+        const discountInput = card.querySelector(".prod-discount");
+
+        if (!nameInput.value.trim()) {
+            markFieldError(nameInput, "Product name is required");
+            hasProductFieldError = true;
         }
-        if (cards.length === 0) {
-            e.preventDefault();
-            showError("At least one product is required");
-            return;
+        if (!priceInput.value || parseFloat(priceInput.value) <= 0) {
+            markFieldError(priceInput, "Price must be greater than 0");
+            hasProductFieldError = true;
         }
-        if (cards.length !== total) {
-            e.preventDefault();
-            showError(cards.length < total
-                ? `Add ${total - cards.length} more products or update Total Products`
-                : `Remove ${cards.length - total} products or update Total Products`);
-            return;
+        if (stockInput.value === "" || parseInt(stockInput.value, 10) < 0) {
+            markFieldError(stockInput, "Stock cannot be negative");
+            hasProductFieldError = true;
         }
-
-        let hasError = false;
-
-        cards.forEach((card) => {
-            const nameInput= card.querySelector(".prod-name");
-            const priceInput = card.querySelector(".prod-price");
-            const stockInput= card.querySelector(".prod-stock");
-            const discountInput= card.querySelector(".prod-discount");
-            const name = nameInput.value.trim();
-            const price= priceInput.value.trim();
-            const stock= stockInput.value.trim();
-            const discount= discountInput.value.trim();
-            if (!name) {
-                markFieldError(nameInput, "Product name is required");
-                hasError = true;
-            }
-            if (price === "" || parseFloat(price) <= 0) {
-                markFieldError(priceInput, "Price must be greater than 0");
-                hasError = true;
-            }
-            if (stock === "" || parseInt(stock, 10) < 0) {
-                markFieldError(stockInput, "Stock cannot be negative");
-                hasError = true;
-            }
-            if (discount !== "" && parseFloat(discount) < 0) {
-                markFieldError(discountInput, "Discount cannot be negative");
-                hasError = true;
-            }
-        });
-
-        if (hasError) {
-            e.preventDefault();
-            return;
-        }
-
-        const hiddenContainer = document.getElementById("hiddenInputsContainer");
-        hiddenContainer.innerHTML = "";
-
-        cards.forEach((card, idx) => {
-            const fields = {
-                ProductId:      card.querySelector(".prod-id").value,
-                ProductName:    card.querySelector(".prod-name").value.trim(),
-                Category:       card.querySelector(".prod-category").value,
-                Price:          card.querySelector(".prod-price").value,
-                Discount:       card.querySelector(".prod-discount").value || "0",
-                AvailableStock: card.querySelector(".prod-stock").value,
-                SupplierId:     supplierId
-            };
-            Object.keys(fields).forEach(key => {
-                const input = document.createElement('input');
-                input.type  = 'hidden';
-                input.name  = `Products[${idx}].${key}`;
-                input.value = fields[key];
-                hiddenContainer.appendChild(input);
-            });
-        });
-
-        if (isEdit) {
-            deletedProductIds.forEach((id, idx) => {
-                const input = document.createElement('input');
-                input.type  = 'hidden';
-                input.name  = `DeletedProductIds[${idx}]`;
-                input.value = id;
-                hiddenContainer.appendChild(input);
-            });
+        if (discountInput.value !== "" && parseFloat(discountInput.value) < 0) {
+            markFieldError(discountInput, "Discount cannot be negative");
+            hasProductFieldError = true;
         }
     });
+
+    // If product count wrong OR product fields wrong — block and show errors
+    if (productErrors.length > 0 || hasProductFieldError) {
+        e.preventDefault();
+        if (productErrors.length > 0) showError(productErrors);
+        return;
+    }
+
+    // All product checks passed — build hidden inputs and let MVC validate supplier fields
+    const hiddenContainer = document.getElementById("hiddenInputsContainer");
+    hiddenContainer.innerHTML = "";
+
+    const razorCount = document.querySelectorAll(
+        '#productsContainer .product-card input.prod-id:not([value="0"])').length;
+    let dynamicIdx = razorCount;
+
+    cards.forEach((card) => {
+        const productId = card.querySelector(".prod-id")?.value ?? "0";
+        if (productId !== "0") return;
+
+        const fields = {
+            ProductId:      "0",
+            ProductName:    card.querySelector(".prod-name").value.trim(),
+            Category:       card.querySelector(".prod-category").value,
+            Price:          card.querySelector(".prod-price").value,
+            Discount:       card.querySelector(".prod-discount").value || "0",
+            AvailableStock: card.querySelector(".prod-stock").value,
+            CreatedDate:    formatDateToDDMonYYYY(card.querySelector(".prod-date")?.value ?? ""),
+            SupplierId:     supplierId
+        };
+        Object.keys(fields).forEach(key => {
+            const input = document.createElement('input');
+            input.type  = 'hidden';
+            input.name  = `Products[${dynamicIdx}].${key}`;
+            input.value = fields[key];
+            hiddenContainer.appendChild(input);
+        });
+        dynamicIdx++;
+    });
+
+    if (isEdit) {
+        deletedProductIds.forEach((id, idx) => {
+            const input = document.createElement('input');
+            input.type  = 'hidden';
+            input.name  = `DeletedProductIds[${idx}]`;
+            input.value = id;
+            hiddenContainer.appendChild(input);
+        });
+    }
+   });
 
     updateProductCountLabel();
 }

@@ -16,22 +16,28 @@ public class MVCSupplierService
     }
     public async Task<List<SupplierViewModel>> GetAll()
     {
-        var result = await _http.GetFromJsonAsync<List<SupplierViewModel>>("api/supplier");
-       // return result ?? new List<SupplierViewModel>();
-       var countries=await _locationService.GetCountries();
-       var stateDict=new Dictionary<int,List<SelectListItem>>();
-       var cityDict=new Dictionary<int,List<SelectListItem>>();
-       foreach(var res in result){
-            res.Country=countries.FirstOrDefault(c=>c.Value==res.CountryId.ToString())?.Text??"";
-            
-            if(!stateDict.ContainsKey(res.CountryId)){
-                stateDict[res.CountryId]=await _locationService.GetStates(res.CountryId);
+        var options = new System.Text.Json.JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+        var result = await _http.GetFromJsonAsync<List<SupplierViewModel>>("api/supplier", options);
+        var countries = await _locationService.GetCountries();
+        var stateDict = new Dictionary<int, List<SelectListItem>>();
+        var cityDict = new Dictionary<int, List<SelectListItem>>();
+        foreach (var res in result)
+        {
+            res.Country = countries.FirstOrDefault(c => c.Value == res.CountryId.ToString())?.Text ?? "";
+
+            if (!stateDict.ContainsKey(res.CountryId))
+            {
+                stateDict[res.CountryId] = await _locationService.GetStates(res.CountryId);
             }
-            res.State=stateDict[res.CountryId].FirstOrDefault(s=>s.Value==res.StateId.ToString())?.Text??"";
-            if(!cityDict.ContainsKey(res.StateId)){
-                cityDict[res.StateId]=await _locationService.GetCities(res.StateId);
+            res.State = stateDict[res.CountryId].FirstOrDefault(s => s.Value == res.StateId.ToString())?.Text ?? "";
+            if (!cityDict.ContainsKey(res.StateId))
+            {
+                cityDict[res.StateId] = await _locationService.GetCities(res.StateId);
             }
-            res.City=cityDict[res.StateId].FirstOrDefault(c=>c.Value==res.CityId.ToString())?.Text??"";
+            res.City = cityDict[res.StateId].FirstOrDefault(c => c.Value == res.CityId.ToString())?.Text ?? "";
 
         }
         return result;
@@ -44,18 +50,27 @@ public class MVCSupplierService
     public async Task<SupplierViewModel?> GetById(int id)
     {
         var result = await _http.GetFromJsonAsync<SupplierViewModel>($"api/supplier/{id}");
+        var countries = await _locationService.GetCountries();
+        result.Country = countries.FirstOrDefault(c => c.Value == result.CountryId.ToString())?.Text ?? "";
+
+        var states = await _locationService.GetStates(result.CountryId);
+        result.State = states.FirstOrDefault(s => s.Value == result.StateId.ToString())?.Text ?? "";
+
+        var cities = await _locationService.GetCities(result.StateId);
+        result.City = cities.FirstOrDefault(c => c.Value == result.CityId.ToString())?.Text ?? "";
+
         return result;
     }
     public async Task<(bool Success, string Error)> Edit(int id, SupplierViewModel supplier)
-{
-    var result = await _http.PutAsJsonAsync($"api/supplier/{supplier.SupplierId}", supplier);
-    if (!result.IsSuccessStatusCode)
     {
-        var error = await result.Content.ReadAsStringAsync();
-        return (false, error);
+        var result = await _http.PutAsJsonAsync($"api/supplier/{supplier.SupplierId}", supplier);
+        if (!result.IsSuccessStatusCode)
+        {
+            var error = await result.Content.ReadAsStringAsync();
+            return (false, error);
+        }
+        return (true, "");
     }
-    return (true, "");
-}
     public async Task<(bool Success, String Error)> Add(SupplierViewModel supplier)
     {
         var result = await _http.PostAsJsonAsync("api/supplier", supplier);
@@ -78,5 +93,5 @@ public class MVCSupplierService
     {
         return await _locationService.GetCities(stateId);
     }
-    
+
 }
