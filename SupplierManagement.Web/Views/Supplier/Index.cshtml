@@ -3,7 +3,6 @@
     ViewData["Title"] = "Suppliers";
     var isAdmin = ViewBag.IsAdmin == true;
 }
-
 <div class="page-header">
     <h2>@(isAdmin ? "Manage Suppliers" : "Our Suppliers")</h2>
     @if (isAdmin)
@@ -11,7 +10,12 @@
         @Html.ActionLink( "+ Add Supplier", "Add","Supplier", null,new { @class = "btn-primary-rc" } )
     }
 </div>
-
+<!--search-->
+<div style="margin-bottom:1.5rem; ">
+    <input type="text" id="searchBox"
+           placeholder="Search by company name or category..."
+           style="width:100%; max-width:420px; padding:8px 14px; border:1px solid #ccc; border-radius:6px; font-size:0.95rem; " />
+</div>
 @if (!Model.Any())
 {
     <div class="empty-state">
@@ -24,7 +28,7 @@ else if (isAdmin)
     <div class="table-card">
         <table>
             <thead>
-                <tr>
+                <tr >
                     <th>Company</th>
                     <th>Products</th>
                     <th>Catalog</th>
@@ -38,7 +42,8 @@ else if (isAdmin)
             <tbody>
                 @foreach (var s in Model)
                 {
-                    <tr>
+                    <tr class="supplier-row" data-company="@s.CompanyName.ToLower()"
+    data-category="@s.CatalogType.ToLower()">
                         <td style="font-weight:600; color:var(--rc-dark);">@Html.ActionLink(
                                 s.CompanyName,
                                 "Details",
@@ -84,6 +89,7 @@ else if (isAdmin)
                     }
                 </tbody>
             </table>
+            <p id="noResults" style="display:none; color:#888; padding:1rem;">No suppliers match your search.</p>
         </div>
     }
 else
@@ -92,7 +98,8 @@ else
         <div class="supplier-cards-grid">
             @foreach (var s in Model)
             {
-                <div class="supplier-card">
+                <div class="supplier-card"    data-company="@s.CompanyName.ToLower()"
+     data-category="@s.CatalogType.ToLower()">
                     <div class="card-company">@Html.ActionLink(
                                                 s.CompanyName,
                                                 "Details",
@@ -124,3 +131,4 @@ else
                 }
             </div>
         }
+<script src="/js/index.js"></script>
