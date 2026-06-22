@@ -1,0 +1,118 @@
+@model List<SupplierManagement.Web.Models.CartItemViewModel>
+
+<div class="form-card form-card-wide" style="max-width:1000px; width:95%;">
+    <h2>My Cart</h2>
+
+    <div id="cartPageError" class="error-message" style="display:none; margin-bottom:1rem;"></div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="error-message">@TempData["Error"]</div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <h3>Your cart is empty</h3>
+            <p>Browse suppliers to add products.</p>
+            @Html.ActionLink("Browse Suppliers", "Index", "Supplier", null, new { @class = "btn-primary-rc" })
+        </div>
+    }
+    else
+    {
+        <div class="table-card">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Supplier</th>
+                        <th>Price</th>
+                        <th>Discount</th>
+                        <th>Qty</th>
+                        <th>Total</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.ProductName</td>
+                            <td>@item.SupplierName</td>
+                            <td>@item.Price.ToString("0.00")</td>
+                            <td>@item.Discount.ToString("0.00")</td>
+                            <td>
+                                <div style="display:flex; align-items:center; gap:6px;">
+                                    <button type="button"
+                                            class="qty-cart-btn"
+                                            data-product-id="@item.ProductId"
+                                            data-action="minus"
+                                            data-stock="@item.AvailableStock"
+                                            style="width:26px;height:26px;cursor:pointer;">−</button>
+                                    <span class="cart-qty-display"
+                                          data-product-id="@item.ProductId"
+                                          data-price="@item.Price"
+                                          data-discount="@item.Discount">@item.Quantity</span>
+                                    <button type="button"
+                                            class="qty-cart-btn"
+                                            data-product-id="@item.ProductId"
+                                            data-action="plus"
+                                            data-stock="@item.AvailableStock"
+                                            style="width:26px;height:26px;cursor:pointer;">+</button>
+                                </div>
+                            </td>
+                            <td>
+                                <strong class="cart-line-total"
+                                        data-product-id="@item.ProductId">
+                                    @item.LineTotal.ToString("0.00")
+                                </strong>
+                            </td>
+                            <td>
+                                @using (Html.BeginForm("Remove", "Cart",
+                                    new { productId = item.ProductId }, FormMethod.Post))
+                                {
+                                    <button type="submit" class="btn-danger-rc btn-sm">Remove</button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="5" style="text-align:right; font-weight:bold;">Grand Total</td>
+                        <td style="font-weight:bold; font-size:1.1rem;" id="grandTotal">
+                            ₹@Model.Sum(i => i.LineTotal).ToString("0.00")
+                        </td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div id="orderConfirmBox"
+             style="display:none; background:#f5f0eb; border:1px solid #c8b89a; border-radius:8px; padding:1rem; margin-top:1rem;">
+            <p style="margin:0 0 0.75rem; font-weight:600;">Ready to place your order?</p>
+            <p style="margin:0 0 1rem; font-size:0.9rem; color:#666;">
+                Total: <strong id="confirmTotal">₹@Model.Sum(i => i.LineTotal).ToString("0.00")</strong> —
+                @Model.Count item(s)
+            </p>
+            @using (Html.BeginForm("PlaceOrder", "Cart", FormMethod.Post))
+            {
+                <button type="submit" class="btn-primary-rc">Proceed & Place Order</button>
+                <button type="button" class="btn-secondary-rc"
+                        onclick="document.getElementById('orderConfirmBox').style.display='none'">
+                    Cancel
+                </button>
+            }
+        </div>
+
+        <div class="form-actions">
+            <button type="button" class="btn-primary-rc"
+                    onclick="document.getElementById('orderConfirmBox').style.display='block'">
+                Place Order
+            </button>
+            @Html.ActionLink("Continue Shopping", "Index", "Supplier", null, new { @class = "btn-secondary-rc" })
+        </div>
+    }
+</div>
+<script src="/js/cartindex.js"></script>

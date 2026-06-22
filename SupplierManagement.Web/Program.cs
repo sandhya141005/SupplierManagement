@@ -24,6 +24,15 @@ builder.Services.AddHttpClient<MVCLocationService>(client =>
 {
     client.BaseAddress = new Uri("http://localhost:5165/");
 });
+builder.Services.AddHttpClient<MVCCartService>(client =>
+{
+    client.BaseAddress = new Uri("http://localhost:5165/");
+});
+
+builder.Services.AddHttpClient<MVCOrderService>(client =>
+{
+    client.BaseAddress = new Uri("http://localhost:5165/");
+});
 builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add<SessionAuthFilter>();
@@ -38,6 +47,7 @@ builder.Services.AddControllersWithViews()
     .AddJsonOptions(options => {
         options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
     });
+
 var app = builder.Build();
 
 app.UseStaticFiles();

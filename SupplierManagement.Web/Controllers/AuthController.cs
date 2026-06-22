@@ -23,6 +23,8 @@ public class AuthController : Controller
         HttpContext.Session.Clear();
         HttpContext.Session.SetString("Role", user.Role);
         HttpContext.Session.SetString("UserName", user.FirstName);
+        HttpContext.Session.SetString("UserId", user.UserId.ToString());
+        
         return RedirectToAction("Index", "Supplier");
     }
 

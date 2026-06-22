@@ -1,0 +1,52 @@
+@model SupplierManagement.Web.Models.OrderViewModel
+@* At the top after @model *@
+@{
+    var isUser = Context.Session.GetString("Role") == "User";
+    var userId = Context.Session.GetString("UserId") ?? "0";
+}
+<div class="form-card form-card-wide" style="max-width:1000px; width:95%;" >
+    <h2>Bill Summary</h2>
+
+    <div style="background:#f9f9f9; border-radius:8px; padding:1rem; margin-bottom:1.5rem;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <div><strong>Order ID:</strong> @Model.OrderNumber</div>
+            <div><strong>Date:</strong> @Model.OrderDate</div>
+        </div>
+    </div>
+
+    <div class="table-card">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Discount</th>
+                    <th>Qty</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.OrderItems)
+                {
+                    <tr>
+                        <td>@item.ProductName</td>
+                        <td>@item.Price.ToString("0.00")</td>
+                        <td>@item.Discount.ToString("0.00")</td>
+                        <td>@item.Quantity</td>
+                        <td>@item.LineTotal.ToString("0.00")</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4" style="text-align:right; font-weight:bold;">Grand Total</td>
+                    <td style="font-weight:bold; font-size:1.1rem;">₹@Model.TotalAmount.ToString("0.00")</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <div class="form-actions">
+        @Html.ActionLink("Back to Purchases", "Index", "Purchases", null, new { @class = "btn-secondary-rc" })
+    </div>
+</div>

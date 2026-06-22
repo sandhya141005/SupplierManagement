@@ -1,10 +1,16 @@
+@using Microsoft.AspNetCore.Http;
 @model SupplierManagement.Web.Models.SupplierViewModel
 @{
-    ViewData["Title"] = "Supplier Details";
+    var isUser = Context.Session.GetString("Role") == "User";
+    var isAdmin = Context.Session.GetString("Role") == "Admin";
 }
 
-<div class="form-card form-card-wide">
+<div class="form-card form-card-wide" style="max-width:1000px; width:95%;">
     <h2>@Model.CompanyName</h2>
+    <div id="cartErrorBox" class="error-message" style="display:none;"></div>
+    <div id="cartSuccessBox"
+         style="display:none; background:#e8f5e9; border:1px solid #a5d6a7; border-radius:6px; padding:10px; margin-bottom:1rem; color:#2e7d32;">
+    </div>
 
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px 2rem; margin-bottom:1.5rem;">
         <div><strong>Catalog Type:</strong> @Model.CatalogType</div>
@@ -16,8 +22,8 @@
     </div>
 
     <hr class="divider" />
-
     <h3>Products</h3>
+
     @if (Model.Products == null || !Model.Products.Any())
     {
         <p>No products listed for this supplier.</p>
@@ -34,18 +40,57 @@
                         <th>Discount</th>
                         <th>Stock</th>
                         <th>Date</th>
+                        @if (isUser)
+                        {
+                            <th>Cart</th>
+                        }
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var p in Model.Products)
                     {
-                        <tr>
-                            <td>@p.ProductName</td>
+                        var outOfStock = p.AvailableStock <= 0;
+                        <tr style="@(outOfStock ? "background:#fff0f0;" : "")">
+                            <td style="@(outOfStock ? "color:#c62828;" : "")" title="@(outOfStock && isAdmin
+                                                                        ? "Stock depleted — please restock or remove product"
+                                                                        : "")">
+                                @p.ProductName
+                            </td>
                             <td>@p.Category</td>
                             <td>@p.Price.ToString("0.00")</td>
                             <td>@p.Discount.ToString("0.00")</td>
-                            <td>@p.AvailableStock</td>
+                            <td style="@(outOfStock ? "color:#c62828; font-weight:bold;" : "")">
+                                @(outOfStock ? "Out of stock" : p.AvailableStock.ToString())
+                            </td>
                             <td>@p.CreatedDate</td>
+                            @if (isUser)
+                            {
+                                <td>
+                                    @if (outOfStock)
+                                    {
+                                        <span style="color:#c62828; font-size:0.85rem;">Currently unavailable</span>
+                                    }
+                                    else
+                                    {
+                                        <div class="qty-control" style="display:flex; align-items:center; gap:6px;">
+                                            <button type="button" class="qty-btn qty-minus" data-product-id="@p.ProductId"
+                                                    style="width:28px; height:28px;">−</button>
+                                            <span class="qty-display" data-product-id="@p.ProductId"
+                                                  style="min-width:24px; text-align:center;">1</span>
+                                            <button type="button" class="qty-btn qty-plus" data-product-id="@p.ProductId"
+                                                    style="width:28px; height:28px;">+</button>
+                                            <span class="in-cart-badge" data-product-id="@p.ProductId"
+                                                  style="display:none; font-size:0.75rem; color:#2e7d32; margin-left:6px;"></span>
+                                            <button type="button" class="btn-primary-rc btn-sm add-to-cart-btn"
+                                                    data-product-id="@p.ProductId" data-product-name="@p.ProductName" data-price="@p.Price"
+                                                    data-discount="@p.Discount" data-stock="@p.AvailableStock"
+                                                    data-supplier="@Model.CompanyName" style="font-size:0.8rem; padding:4px 10px;">
+                                                Add to Cart
+                                            </button>
+                                        </div>
+                                    }
+                                </td>
+                            }
                         </tr>
                     }
                 </tbody>
@@ -55,5 +100,12 @@
 
     <div class="form-actions">
         @Html.ActionLink("Back to Suppliers", "Index", "Supplier", null, new { @class = "btn-secondary-rc" })
+        @if (isUser)
+        {
+            @Html.ActionLink("View My Cart", "Index", "Cart", null, new { @class = "btn-primary-rc" })
+        }
     </div>
 </div>
+
+<script src="/js/details.js">
+    

@@ -12,8 +12,7 @@
 </div>
 <!--search-->
 <div style="margin-bottom:1.5rem; ">
-    <input type="text" id="searchBox"
-           placeholder="Search by company name or category..."
+    <input type="text" id="searchBox" placeholder="Search by company name or category..."
            style="width:100%; max-width:420px; padding:8px 14px; border:1px solid #ccc; border-radius:6px; font-size:0.95rem; " />
 </div>
 @if (!Model.Any())
@@ -28,7 +27,7 @@ else if (isAdmin)
     <div class="table-card">
         <table>
             <thead>
-                <tr >
+                <tr>
                     <th>Company</th>
                     <th>Products</th>
                     <th>Catalog</th>
@@ -42,15 +41,14 @@ else if (isAdmin)
             <tbody>
                 @foreach (var s in Model)
                 {
-                    <tr class="supplier-row" data-company="@s.CompanyName.ToLower()"
-    data-category="@s.CatalogType.ToLower()">
+                    <tr class="supplier-row" data-company="@s.CompanyName.ToLower()" data-category="@s.CatalogType.ToLower()">
                         <td style="font-weight:600; color:var(--rc-dark);">@Html.ActionLink(
-                                s.CompanyName,
-                                "Details",
-                                "Supplier",
-                                new { id = s.SupplierId },
-                                null
-                            )</td>
+                                                            s.CompanyName,
+                                                            "Details",
+                                                            "Supplier",
+                                                            new { id = s.SupplierId },
+                                                            null
+                                                        )</td>
                             <td>@s.TotalProducts</td>
                             <td>
                                 <span
@@ -98,15 +96,14 @@ else
         <div class="supplier-cards-grid">
             @foreach (var s in Model)
             {
-                <div class="supplier-card"    data-company="@s.CompanyName.ToLower()"
-     data-category="@s.CatalogType.ToLower()">
+                <div class="supplier-card" data-company="@s.CompanyName.ToLower()" data-category="@s.CatalogType.ToLower()">
                     <div class="card-company">@Html.ActionLink(
-                                                s.CompanyName,
-                                                "Details",
-                                                "Supplier",
-                                                new { id = s.SupplierId },
-                                                null
-                                            )</div>
+                                                                        s.CompanyName,
+                                                                        "Details",
+                                                                        "Supplier",
+                                                                        new { id = s.SupplierId },
+                                                                        null
+                                                                    )</div>
                         <div class="card-meta">@s.City, @s.State &middot; @s.Country</div>
 
                         <div>
@@ -120,15 +117,13 @@ else
 
                         <div class="card-footer">
                             <span style="font-size:0.8rem; color:var(--rc-muted);">&#9742; @s.ContactNo</span>
-                            @Html.ActionLink("Add to Cart", "AddToCart", "Cart", new { id = s.SupplierId }, new
-                            {
-                                @class = "btn-primary-rc",
-                                style = "padding:0.4rem 1rem; font-size:0.85rem;"
-                            }
-        )
+                            @Html.ActionLink("View Products", "Details", "Supplier",
+    new { id = s.SupplierId },
+    new { @class = "btn-primary-rc", style = "padding:0.4rem 1rem; font-size:0.85rem;" })
+                            
                         </div>
                     </div>
                 }
             </div>
         }
-<script src="/js/index.js"></script>
+        <script src="/js/index.js"></script>

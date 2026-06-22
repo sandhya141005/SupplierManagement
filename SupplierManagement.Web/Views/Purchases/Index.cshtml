@@ -1,0 +1,44 @@
+@model List<SupplierManagement.Web.Models.OrderViewModel>
+
+<div class="form-card form-card-wide" style="max-width:1000px; width:95%;">
+    <h2>My Purchases</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <h3>No purchases yet</h3>
+            @Html.ActionLink("Browse Suppliers", "Index", "Supplier", null, new { @class = "btn-primary-rc" })
+        </div>
+    }
+    else
+    {
+        <div class="table-card">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Date</th>
+                        <th>Items</th>
+                        <th>Total</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var o in Model)
+                    {
+                        <tr>
+                            <td><strong>@o.OrderNumber</strong></td>
+                            <td>@o.OrderDate</td>
+                            <td>@o.OrderItems.Count item(s)</td>
+                            <td>₹@o.TotalAmount.ToString("0.00")</td>
+                            <td>
+                                @Html.ActionLink("View Bill", "Details", "Purchases",
+                                    new { id = o.OrderId }, new { @class = "btn-secondary-rc btn-sm" })
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
