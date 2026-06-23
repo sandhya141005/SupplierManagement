@@ -11,9 +11,6 @@ public class Supplier
     public int CountryId { get; set; }
     public int StateId { get; set; }
     public int CityId { get; set; }
-    public string ContactNo { get; set; } = "";
-    //public Country? Country { get; set; }
-    //public State? State { get; set; }
-    //public City? City { get; set; }
-    public List<Product> Products { get; set; } = new();
+    public string? ContactNo { get; set; } 
+      public List<Product> Products { get; set; } = new();
 }

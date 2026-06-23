@@ -41,23 +41,15 @@ public class SupplierController : Controller
         supplier.Products = supplier.Products
             .Where(p => !string.IsNullOrWhiteSpace(p.ProductName))
             .ToList();
-        for (int i = 0; i < supplier.Products.Count; i++)
+        /*for (int i = 0; i < supplier.Products.Count; i++)
         {
             ModelState.Remove($"Products[{i}].Category");
             ModelState.Remove($"Products[{i}].SupplierId");
-        }
+        }*/
         if (!ModelState.IsValid)
         {
             await ReloadDropdowns(supplier);
             return View("SupplierForm", supplier);
-        }
-        foreach (var p in supplier.Products)
-        {
-            if (!string.IsNullOrEmpty(p.CreatedDate) &&
-                DateTime.TryParse(p.CreatedDate, out var parsedDate))
-            {
-                p.CreatedDate = parsedDate.ToString("dd-MMM-yyyy");
-            }
         }
         var (success, error) = await _service.Edit(id, supplier);
         if (!success)
@@ -83,23 +75,17 @@ public class SupplierController : Controller
 
         supplier.Products = supplier.Products.Where(p => !string.IsNullOrWhiteSpace(p.ProductName)).ToList();
         for (int i = 0; i < supplier.Products.Count; i++)
+        /*for (int i = 0; i < supplier.Products.Count; i++)
         {
             ModelState.Remove($"Products[{i}].Category");
             ModelState.Remove($"Products[{i}].SupplierId");
-        }
+        }*/
         if (!ModelState.IsValid)
         {
             await ReloadDropdowns(supplier);
             return View("SupplierForm", supplier);
         }
-        foreach (var p in supplier.Products)
-        {
-            if (!string.IsNullOrEmpty(p.CreatedDate) &&
-                DateTime.TryParse(p.CreatedDate, out var parsedDate))
-            {
-                p.CreatedDate = parsedDate.ToString("dd-MMM-yyyy");
-            }
-        }
+       
         var (success, error) = await _service.Add(supplier);
         if (!success)
         {

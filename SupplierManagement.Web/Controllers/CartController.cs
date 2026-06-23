@@ -9,20 +9,11 @@ public class CartController : Controller
     private readonly MVCSupplierService _supplierService;
     // private readonly MVCCartService _cart;
 
-
     public CartController(MVCCartService cart, MVCOrderService orderService, MVCSupplierService supplierService)
     {
         _cart = cart;
         _orderService = orderService;
         _supplierService = supplierService;
-    }
-
-    // View supplier's products with Add to Cart
-    public async Task<IActionResult> ViewSupplier(int id)
-    {
-        var supplier = await _supplierService.GetById(id);
-        if (supplier == null) return NotFound();
-        return View(supplier);
     }
 
     [HttpPost]
@@ -33,7 +24,7 @@ public class CartController : Controller
         var cart = await _cart.GetCart();
         return Ok(new { count = cart.Count });
     }
-    // View cart
+   
     public async Task<IActionResult> Index()
     {
         var cart = await _cart.GetCart();
@@ -75,7 +66,7 @@ public class CartController : Controller
             return RedirectToAction("Index");
         }
 
-        await _cart.Clear(); // ← clears from DB after order
+        await _cart.Clear();
         return View("OrderConfirmation", order);
     }
     [HttpGet]

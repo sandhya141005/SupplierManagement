@@ -1,3 +1,5 @@
+namespace SupplierManagement.Web.MVCDTO;
+
 public class ProductDTO
 {
     public int ProductId { get; set; }
@@ -13,5 +15,6 @@ public class ProductDTO
     public int AvailableStock { get; set; }
 
     public int SupplierId { get; set; }
+
     public DateTime CreatedDate { get; set; }
 }

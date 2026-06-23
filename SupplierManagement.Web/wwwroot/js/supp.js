@@ -21,6 +21,8 @@ function initializeSupplierForm(options) {
     function clearInlineErrors() {
         document.querySelectorAll('.prod-field-error').forEach(el => el.remove());
         document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+       const paymentError = document.getElementById('paymentError');
+    if (paymentError) paymentError.style.display = 'none'    
     }
 
     function markFieldError(input, message) {
@@ -253,13 +255,23 @@ let hasAnyError = false;
         }
 
         // ── 5. If ANY error exists, stop here ───────────────────
-      const formIsValid = $("#supplierForm").valid();
+     const checkedPayments = document.querySelectorAll('input[name="SelectedPaymentMethods"]:checked');
+const paymentError = document.getElementById('paymentError');
+
+if (checkedPayments.length === 0) {
+    if (paymentError) paymentError.style.display = 'block';
+    hasProductFieldError = true;
+} else {
+    if (paymentError) paymentError.style.display = 'none';
+}
+        const formIsValid = $("#supplierForm").valid();
 console.log({
     total,
     cardCount,
     countErrors,
     formIsValid
 });
+
 if (!formIsValid)
 {
     e.preventDefault();
@@ -275,7 +287,6 @@ if (!formIsValid || countErrors.length > 0 || hasProductFieldError)
     return;
 }
 
-        // ── 6. All valid — build hidden inputs and submit ────────
         const hiddenContainer = document.getElementById("hiddenInputsContainer");
         hiddenContainer.innerHTML = "";
         const razorCount = document.querySelectorAll(
@@ -314,9 +325,7 @@ if (!formIsValid || countErrors.length > 0 || hasProductFieldError)
                 hiddenContainer.appendChild(input);
             });
         }
-
-        // Actually submit now that everything is valid
-        this.submit();
+ this.submit();
     });
 
     updateProductCountLabel();

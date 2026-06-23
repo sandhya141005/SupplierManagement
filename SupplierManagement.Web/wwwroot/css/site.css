@@ -61,7 +61,12 @@ body {
     margin-top: 2px;
 }
 
-/* ===== RESET & BASE ===== */
+.action-buttons{
+   text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
 *, *::before, *::after { box-sizing: border-box; }
 
 html, body {

@@ -87,10 +87,7 @@ public class SupplierController : ControllerBase
                             existing.Price = pDto.Price;
                             existing.Discount = pDto.Discount;
                             existing.AvailableStock = pDto.AvailableStock;
-                            if (!string.IsNullOrEmpty(pDto.CreatedDate))
-        existing.CreatedDate = DateTime.ParseExact(pDto.CreatedDate, "dd-MMM-yyyy",
-            System.Globalization.CultureInfo.InvariantCulture); // ← update date too
-
+                            existing.CreatedDate = pDto.CreatedDate;
                         }
                     }
                     else
@@ -102,10 +99,7 @@ public class SupplierController : ControllerBase
                             Price = pDto.Price,
                             Discount = pDto.Discount,
                             AvailableStock = pDto.AvailableStock,
-                            CreatedDate = string.IsNullOrEmpty(pDto.CreatedDate)
-                                        ? DateTime.Now
-                                        : DateTime.ParseExact(pDto.CreatedDate, "dd-MMM-yyyy",
-                System.Globalization.CultureInfo.InvariantCulture), // ← use DTO date
+                            CreatedDate = pDto.CreatedDate,
                             SupplierId = supp.SupplierId
                         };
                         supp.Products.Add(newProduct);

@@ -14,7 +14,7 @@ function recalcTotal() {
         const price = parseFloat(display.dataset.price);
         const discount = parseFloat(display.dataset.discount);
         const qty = parseInt(display.textContent);
-        const line = (price - discount) * qty;
+        const line = (price - ((discount*price)/100)) * qty;
         const lineEl = document.querySelector(`.cart-line-total[data-product-id="${id}"]`);
         if (lineEl) lineEl.textContent = line.toFixed(2);
         grand += line;

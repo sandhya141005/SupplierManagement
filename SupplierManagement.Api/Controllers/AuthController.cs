@@ -29,22 +29,6 @@ public class AuthController : ControllerBase
         {
             return BadRequest(ex.Message);
         }
-        /*User user = new User{
-            Email = dto.Email,
-            FirstName = dto.FirstName,
-            LastName = dto.LastName,
-            Gender = dto.Gender,
-            Password = dto.Password,
-            ContactNo = dto.ContactNo,
-            Role = dto.IsAdmin?"Admin":"User",
-            CountryId = dto.CountryId,
-            StateId = dto.StateId,
-            CityId = dto.CityId
-        };
-        _service.Register(user);
-        return Ok(
-            "User Registered Successfully");
-            */
 
     }
     [HttpPost("login")]
