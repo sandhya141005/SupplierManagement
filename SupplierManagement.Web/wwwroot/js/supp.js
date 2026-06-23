@@ -2,9 +2,7 @@ function initializeSupplierForm(options) {
     isEdit = options.isEdit;
     supplierId = options.supplierId;
     deletedProductIds = [];
-
-    // ── Helpers ───────────────────────────────────────────────────
-    function showError(messages) {
+ function showError(messages) {
         const box = document.getElementById('jsErrorBox');
         if (!Array.isArray(messages)) messages = [messages];
         box.innerHTML = messages.map(m => `<div>${m}</div>`).join('');
@@ -48,7 +46,6 @@ function initializeSupplierForm(options) {
             `(${getProductCardCount()} / ${label} added)`;
     }
 
-    // ── Cascading dropdowns ───────────────────────────────────────
     document.getElementById('CountryId').addEventListener('change', function () {
         const countryId = this.value;
         const stateDropdown = document.getElementById('StateId');
@@ -82,9 +79,7 @@ function initializeSupplierForm(options) {
                 });
             });
     });
-
-    // ── Add product card ──────────────────────────────────────────
-    document.getElementById("addProductBtn").addEventListener("click", function () {
+  document.getElementById("addProductBtn").addEventListener("click", function () {
         clearError();
         const rawValue = document.getElementById("TotalProducts").value;
         const totalProducts = parseInt(rawValue, 10);
@@ -113,12 +108,6 @@ function initializeSupplierForm(options) {
                 </div>
             </div>`;
         document.getElementById("productsContainer").insertAdjacentHTML("beforeend", html);
-        /*const newCards = document.querySelectorAll('#productsContainer .product-card');
-        const lastCard = newCards[newCards.length - 1];
-        const newDateInput = lastCard.querySelector('.prod-date');
-        if (newDateInput && typeof flatpickr !== 'undefined') {
-            flatpickr(newDateInput, { dateFormat: "d-M-Y", allowInput: true });
-        }*/
         updateProductCountLabel();
     });
 
@@ -136,74 +125,15 @@ function initializeSupplierForm(options) {
 
     document.getElementById("TotalProducts").addEventListener("input", updateProductCountLabel);
 let hasAnyError = false;
-    // ── Submit ────────────────────────────────────────────────────
     document.getElementById("supplierForm").addEventListener("submit", function (e) {
-        // Always prevent default first — run ALL validations, then decide
-       // e.preventDefault();
-     //  let formIsValid = $("#supplierForm").valid();
        clearError();
         clearInlineErrors();
 
-        // Track errors separately so nothing short-circuits
         let hasSupplierError = false;
-        const countErrors = [];       // goes to error box
+        const countErrors = [];      
         let hasProductFieldError = false;
         let hasAnyError = false;
-
-        // ── 1. Supplier fields ──────────────────────────────────
-    /*    const companyInput  = document.getElementById("CompanyName");
-        const catalogInput  = document.getElementById("CatalogType");
-        const totalInput    = document.getElementById("TotalProducts");
-        const dateInput     = document.getElementById("CreatedDate");
-        const countryInput  = document.getElementById("CountryId");
-        const stateInput    = document.getElementById("StateId");
-        const cityInput     = document.getElementById("CityId");
-
-        if (!companyInput.value.trim()) {
-            markFieldError(companyInput, "Company name is required");
-            hasSupplierError = true;
-        }
-        if (!catalogInput.value.trim()) {
-            markFieldError(catalogInput, "Catalog type is required");
-            hasSupplierError = true;
-        }
-        const total = parseInt(totalInput.value, 10);
-        if (!totalInput.value || isNaN(total) || total < 1) {
-            markFieldError(totalInput, "Total products is required and must be at least 1");
-            hasSupplierError = true;
-        }
-        if (!dateInput || !dateInput.value.trim()) {
-            markFieldError(dateInput, "Created date is required");
-            hasSupplierError = true;
-        } else {
-            const dateRegex = /^\d{2}-[A-Za-z]{3}-\d{4}$/;
-            if (!dateRegex.test(dateInput.value.trim())) {
-                markFieldError(dateInput, "Date must be in dd-Mon-yyyy format e.g. 11-Jun-2026");
-                hasSupplierError = true;
-            }
-        }
-        if (!countryInput.value || countryInput.value === "0") {
-            markFieldError(countryInput, "Please select a country");
-            hasSupplierError = true;
-        }
-        if (!stateInput.value || stateInput.value === "0") {
-            markFieldError(stateInput, "Please select a state");
-            hasSupplierError = true;
-        }
-        if (!cityInput.value || cityInput.value === "0") {
-            markFieldError(cityInput, "Please select a city");
-            hasSupplierError = true;
-        }
-
-        const checkedPayments = document.querySelectorAll('input[name="SelectedPaymentMethods"]:checked');
-        if (checkedPayments.length === 0) {
-            const paymentBox = document.querySelector('.payment-checkboxes');
-            markFieldError(paymentBox, "Select at least one payment method");
-            hasSupplierError = true;
-        }
-*/
-        // ── 2. Product count ────────────────────────────────────
-        const total = parseInt(document.getElementById("TotalProducts").value, 10);
+   const total = parseInt(document.getElementById("TotalProducts").value, 10);
         const cards = document.querySelectorAll('#productsContainer .product-card');
         const cardCount = cards.length;
 
@@ -214,9 +144,7 @@ let hasAnyError = false;
         } else if (!isNaN(total) && cardCount > total) {
             countErrors.push(`Remove ${cardCount - total} product(s) or update Total Products.`);
         }
-
-        // ── 3. Product field validation (always runs if cards exist) ──
-        cards.forEach((card) => {
+   cards.forEach((card) => {
             const nameInput     = card.querySelector(".prod-name");
             const priceInput    = card.querySelector(".prod-price");
             const stockInput    = card.querySelector(".prod-stock");
@@ -239,8 +167,6 @@ let hasAnyError = false;
                 markFieldError(discountInput, "Discount cannot be negative");
                 hasProductFieldError = true;
             }
-            // prod-date is a text input (flatpickr) on dynamically added cards
-            // and a <input type="date"> on Razor-rendered edit cards
             if (prodDateInput) {
                 if (!prodDateInput.value.trim()) {
                     markFieldError(prodDateInput, "Product date is required");
@@ -249,13 +175,11 @@ let hasAnyError = false;
             }
         });
 
-        // ── 4. Show count/logic errors in error box ─────────────
-        if (countErrors.length > 0) {
+       if (countErrors.length > 0) {
             showError(countErrors);
         }
 
-        // ── 5. If ANY error exists, stop here ───────────────────
-     const checkedPayments = document.querySelectorAll('input[name="SelectedPaymentMethods"]:checked');
+       const checkedPayments = document.querySelectorAll('input[name="SelectedPaymentMethods"]:checked');
 const paymentError = document.getElementById('paymentError');
 
 if (checkedPayments.length === 0) {
@@ -272,20 +196,12 @@ console.log({
     formIsValid
 });
 
-if (!formIsValid)
+ if (!formIsValid || countErrors.length > 0 || hasProductFieldError)
 {
     e.preventDefault();
-}
-
-if (countErrors.length > 0 || hasProductFieldError)
-{
-    e.preventDefault();
-}
-
-if (!formIsValid || countErrors.length > 0 || hasProductFieldError)
-{
     return;
 }
+
 
         const hiddenContainer = document.getElementById("hiddenInputsContainer");
         hiddenContainer.innerHTML = "";

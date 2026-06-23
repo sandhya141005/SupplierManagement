@@ -21,43 +21,10 @@ public class MVCSupplierService
     {
         if (model.CreatedDateRaw.HasValue)
         {
-            model.CreatedDate =
-                model.CreatedDateRaw.Value.ToString(
-                    "dd-MMM-yyyy",
-                    CultureInfo.InvariantCulture);
+            model.CreatedDate = model.CreatedDateRaw.Value.ToString("dd-MMM-yyyy", CultureInfo.InvariantCulture);
         }
     }
-    private SupplierDTO BuildSupplierDTO(
-    SupplierViewModel model,
-    DateTime createdDate)
-    {
-        return new SupplierDTO
-        {
-            SupplierId = model.SupplierId,
-            CompanyName = model.CompanyName,
-            TotalProducts = model.TotalProducts,
-            CatalogType = model.CatalogType,
-            PaymentMethodsAllowed = model.PaymentMethodsAllowed,
-            ContactNo = model.ContactNo,
-            CountryId = model.CountryId,
-            StateId = model.StateId,
-            CityId = model.CityId,
-            CreatedDate = createdDate,
-            DeletedProductIds = model.DeletedProductIds,
 
-            Products = model.Products.Select(p => new ProductDTO
-            {
-                ProductId = p.ProductId,
-                ProductName = p.ProductName,
-                Category = p.Category,
-                Price = p.Price,
-                Discount = p.Discount,
-                AvailableStock = p.AvailableStock,
-                SupplierId = p.SupplierId,
-                CreatedDate = p.CreatedDate ?? DateTime.Now
-            }).ToList()
-        };
-    }
     public async Task<List<SupplierViewModel>> GetAll()
     {
         var options = new JsonSerializerOptions
@@ -65,10 +32,7 @@ public class MVCSupplierService
             PropertyNameCaseInsensitive = true
         };
 
-        var result =
-            await _http.GetFromJsonAsync<List<SupplierViewModel>>(
-                "api/supplier",
-                options);
+        var result = await _http.GetFromJsonAsync<List<SupplierViewModel>>("api/supplier", options);
 
         if (result == null)
             return new();
@@ -81,28 +45,19 @@ public class MVCSupplierService
         foreach (var res in result)
         {
             FormatCreatedDate(res);
-
-            res.Country =
-                countries.FirstOrDefault(
-                    c => c.Value == res.CountryId.ToString())?.Text ?? "";
-
+            res.Country = countries.FirstOrDefault(c => c.Value == res.CountryId.ToString())?.Text ?? "";
             if (!stateDict.ContainsKey(res.CountryId))
             {
                 stateDict[res.CountryId] =
                     await _locationService.GetStates(res.CountryId);
             }
-
             res.State =
-                stateDict[res.CountryId]
-                    .FirstOrDefault(
-                        s => s.Value == res.StateId.ToString())?.Text ?? "";
+                stateDict[res.CountryId].FirstOrDefault(s => s.Value == res.StateId.ToString())?.Text ?? "";
 
             if (!cityDict.ContainsKey(res.StateId))
             {
-                cityDict[res.StateId] =
-                    await _locationService.GetCities(res.StateId);
+                cityDict[res.StateId] = await _locationService.GetCities(res.StateId);
             }
-
             res.City =
                 cityDict[res.StateId]
                     .FirstOrDefault(
@@ -161,8 +116,13 @@ public class MVCSupplierService
             System.Globalization.CultureInfo.InvariantCulture,
             System.Globalization.DateTimeStyles.None, out var createdDate))
             return (false, "Invalid date format. Use dd-Mon-yyyy e.g. 11-Jun-2026");
-
-        var dto = BuildSupplierDTO(model, createdDate);
+         var dto = _mapper.Map<SupplierDTO>(model);
+    dto.CreatedDate = createdDate;
+    foreach (var product in dto.Products)
+    {
+        if (product.CreatedDate == default)
+            product.CreatedDate = DateTime.Now;
+    }
         var response = await _http.PutAsJsonAsync($"api/supplier/{id}", dto);
         if (!response.IsSuccessStatusCode)
             return (false, await response.Content.ReadAsStringAsync());
@@ -175,7 +135,15 @@ public class MVCSupplierService
             System.Globalization.DateTimeStyles.None, out var createdDate))
             return (false, "Invalid date format. Use dd-Mon-yyyy e.g. 11-Jun-2026");
 
-        var dto = BuildSupplierDTO(model, createdDate);
+        var dto = _mapper.Map<SupplierDTO>(model);
+        dto.CreatedDate = createdDate;
+        foreach (var product in dto.Products)
+        {
+            if (product.CreatedDate == default)
+            {
+                product.CreatedDate = DateTime.Now;
+            }
+        }
         var response = await _http.PostAsJsonAsync("api/supplier", dto);
         if (!response.IsSuccessStatusCode)
             return (false, await response.Content.ReadAsStringAsync());

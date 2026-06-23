@@ -82,26 +82,15 @@ public class SupplierController : ControllerBase
                         var existing = supp.Products.FirstOrDefault(p => p.ProductId == pDto.ProductId);
                         if (existing != null)
                         {
-                            existing.ProductName = pDto.ProductName;
-                            existing.Category = string.IsNullOrWhiteSpace(pDto.Category) ? dto.CatalogType : pDto.Category;
-                            existing.Price = pDto.Price;
-                            existing.Discount = pDto.Discount;
-                            existing.AvailableStock = pDto.AvailableStock;
-                            existing.CreatedDate = pDto.CreatedDate;
+                             _mapper.Map(pDto, existing);
                         }
                     }
                     else
                     {
-                        var newProduct = new Product
-                        {
-                            ProductName = pDto.ProductName,
-                            Category = string.IsNullOrWhiteSpace(pDto.Category) ? dto.CatalogType : pDto.Category,
-                            Price = pDto.Price,
-                            Discount = pDto.Discount,
-                            AvailableStock = pDto.AvailableStock,
-                            CreatedDate = pDto.CreatedDate,
-                            SupplierId = supp.SupplierId
-                        };
+                       var newProduct = _mapper.Map<Product>(pDto); 
+            if (string.IsNullOrWhiteSpace(newProduct.Category))
+                newProduct.Category = dto.CatalogType;
+            newProduct.SupplierId = supp.SupplierId;
                         supp.Products.Add(newProduct);
                     }
                 }
@@ -129,7 +118,6 @@ public class SupplierController : ControllerBase
                 {
                     if (string.IsNullOrWhiteSpace(p.Category))
                         p.Category = dto.CatalogType;
-                    //  p.CreatedDate = DateTime.Now;
                 }
             }
 
@@ -144,9 +132,3 @@ public class SupplierController : ControllerBase
 
 }
 
-
-
-
-
-/////////
-/// 

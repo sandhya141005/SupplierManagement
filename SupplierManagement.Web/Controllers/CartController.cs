@@ -7,8 +7,6 @@ public class CartController : Controller
     private readonly MVCCartService _cart;
     private readonly MVCOrderService _orderService;
     private readonly MVCSupplierService _supplierService;
-    // private readonly MVCCartService _cart;
-
     public CartController(MVCCartService cart, MVCOrderService orderService, MVCSupplierService supplierService)
     {
         _cart = cart;

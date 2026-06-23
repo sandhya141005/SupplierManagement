@@ -22,8 +22,6 @@ public class RegisterViewModel
 
     [Required(ErrorMessage = "Password is required")]
     public string Password { get; set; } = "";
-
-    // [Phone(ErrorMessage = "Only numeric and special characters allowed")]
     [RegularExpression(@"^(?:\d{10}|)$", ErrorMessage = "Contact number must be exactly 10 digits")]
     public string? ContactNo { get; set; }
 

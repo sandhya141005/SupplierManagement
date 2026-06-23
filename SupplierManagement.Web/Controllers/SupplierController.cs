@@ -41,11 +41,6 @@ public class SupplierController : Controller
         supplier.Products = supplier.Products
             .Where(p => !string.IsNullOrWhiteSpace(p.ProductName))
             .ToList();
-        /*for (int i = 0; i < supplier.Products.Count; i++)
-        {
-            ModelState.Remove($"Products[{i}].Category");
-            ModelState.Remove($"Products[{i}].SupplierId");
-        }*/
         if (!ModelState.IsValid)
         {
             await ReloadDropdowns(supplier);
@@ -75,11 +70,6 @@ public class SupplierController : Controller
 
         supplier.Products = supplier.Products.Where(p => !string.IsNullOrWhiteSpace(p.ProductName)).ToList();
         for (int i = 0; i < supplier.Products.Count; i++)
-        /*for (int i = 0; i < supplier.Products.Count; i++)
-        {
-            ModelState.Remove($"Products[{i}].Category");
-            ModelState.Remove($"Products[{i}].SupplierId");
-        }*/
         if (!ModelState.IsValid)
         {
             await ReloadDropdowns(supplier);
