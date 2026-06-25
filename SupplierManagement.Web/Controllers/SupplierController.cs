@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SupplierManagement.Web.Models;
+using ClosedXML.Excel;
 public class SupplierController : Controller
 {
     private readonly MVCSupplierService _service;
@@ -106,5 +107,54 @@ public class SupplierController : Controller
     public IActionResult TestError()
     {
         throw new Exception("Testing API exception filter");
+    }
+
+    public async Task<IActionResult> DownloadExcel()
+    {
+        var suppliers = await _service.GetAll();
+        using var workbook = new XLWorkbook();
+        var ws = workbook.Worksheets.Add("Suppliers");
+        var headers = new[]
+        {
+        "Company Name", "Catalog Type", "Total Products",
+        "Payment Methods", "Created Date", "Location", "Contact"
+    };
+        for (int i = 0; i < headers.Length; i++)
+        {
+            var cell = ws.Cell(1, i + 1);
+            cell.Value = headers[i];
+            cell.Style.Font.Bold = true;
+            cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#4E342E");
+            cell.Style.Font.FontColor = XLColor.White;
+            cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+        }
+        int row = 2;
+        foreach (var s in suppliers)
+        {
+            ws.Cell(row, 1).Value = s.CompanyName;
+            ws.Cell(row, 2).Value = s.CatalogType;
+            ws.Cell(row, 3).Value = s.TotalProducts;
+            ws.Cell(row, 4).Value = s.PaymentMethodsAllowed;
+            ws.Cell(row, 5).Value = s.CreatedDate;
+            ws.Cell(row, 6).Value = $"{s.City}, {s.State}, {s.Country}";
+            ws.Cell(row, 7).Value = s.ContactNo ?? "";
+            if (row % 2 == 0)
+            {
+                ws.Row(row).Style.Fill.BackgroundColor = XLColor.FromHtml("#FAF7F5");
+            }
+            row++;
+        }
+        ws.Columns().AdjustToContents();
+        var range = ws.Range(1, 1, row - 1, headers.Length);
+        range.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+        range.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+        range.Style.Border.OutsideBorderColor = XLColor.FromHtml("#D7CCC8");
+        range.Style.Border.InsideBorderColor = XLColor.FromHtml("#D7CCC8");
+        using var stream = new MemoryStream();
+        workbook.SaveAs(stream);
+        stream.Position = 0;
+        return File(stream.ToArray(),
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            $"Suppliers-{DateTime.Now:dd-MMM-yyyy}.xlsx");
     }
 }

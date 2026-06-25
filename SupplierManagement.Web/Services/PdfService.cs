@@ -80,7 +80,7 @@ public class PdfService
                                 c.Background(bg).Padding(8);
                             table.Cell().Element(c => DataCell(c, bg)).Text(item.ProductName);
                             table.Cell().Element(c => DataCell(c, bg)).Text($"Rs.{item.Price:0.00}");
-                            table.Cell().Element(c => DataCell(c, bg)).Text($"Rs.{item.Discount:0.00}");
+                            table.Cell().Element(c => DataCell(c, bg)).Text($"{item.Discount}%");
                             table.Cell().Element(c => DataCell(c, bg)).Text(item.Quantity.ToString());
                             table.Cell().Element(c => DataCell(c, bg)).Text($"Rs.{item.LineTotal:0.00}").Bold();
                         }

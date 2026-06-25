@@ -7,7 +7,10 @@
     <h2>@(isAdmin ? "Manage Suppliers" : "Our Suppliers")</h2>
     @if (isAdmin)
     {
-        @Html.ActionLink( "+ Add Supplier", "Add","Supplier", null,new { @class = "btn-primary-rc" } )
+        <div class="d-flex align-items-center gap-2">
+            @Html.ActionLink( "+ Add Supplier", "Add","Supplier", null,new { @class = "btn-primary-rc" } )
+            @Html.ActionLink("Download Excel", "DownloadExcel", "Supplier",null, new { @class = "btn-secondary-rc" })
+        </div>
     }
 </div>
 <!--search-->
@@ -43,12 +46,12 @@ else if (isAdmin)
                 {
                     <tr class="supplier-row" data-company="@s.CompanyName.ToLower()" data-category="@s.CatalogType.ToLower()">
                         <td style="font-weight:600; color:var(--rc-dark);">@Html.ActionLink(
-                                                            s.CompanyName,
-                                                            "Details",
-                                                            "Supplier",
-                                                            new { id = s.SupplierId },
-                                                            null
-                                                        )</td>
+                                                                                                                    s.CompanyName,
+                                                                                                                    "Details",
+                                                                                                                    "Supplier",
+                                                                                                                    new { id = s.SupplierId },
+                                                                                                                    null
+                                                                                                                )</td>
                             <td>@s.TotalProducts</td>
                             <td>
                                 <span
@@ -98,12 +101,12 @@ else
             {
                 <div class="supplier-card" data-company="@s.CompanyName.ToLower()" data-category="@s.CatalogType.ToLower()">
                     <div class="card-company">@Html.ActionLink(
-                                                                        s.CompanyName,
-                                                                        "Details",
-                                                                        "Supplier",
-                                                                        new { id = s.SupplierId },
-                                                                        null
-                                                                    )</div>
+                                                                                                                        s.CompanyName,
+                                                                                                                        "Details",
+                                                                                                                        "Supplier",
+                                                                                                                        new { id = s.SupplierId },
+                                                                                                                        null
+                                                                                                                    )</div>
                         <div class="card-meta">@s.City, @s.State &middot; @s.Country</div>
 
                         <div>
@@ -120,7 +123,7 @@ else
                             @Html.ActionLink("View Products", "Details", "Supplier",
     new { id = s.SupplierId },
     new { @class = "btn-primary-rc", style = "padding:0.4rem 1rem; font-size:0.85rem;" })
-                            
+
                         </div>
                     </div>
                 }
