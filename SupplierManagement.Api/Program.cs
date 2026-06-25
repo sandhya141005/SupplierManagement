@@ -5,8 +5,19 @@ using SupplierManagement.Business.Services;
 using SupplierManagement.Data.Interfaces;
 using SupplierManagement.Data.Repositories;
 using SupplierManagement.Api.Mappings;
+using SupplierManagement.Api.Filters;
+using SupplierManagement.Api.Email;
+using Serilog;
+using Hangfire;
+using Hangfire.SqlServer;
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File(
+        "Logs/log-.txt",
+        rollingInterval: RollingInterval.Day)
+    .CreateLogger();
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Host.UseSerilog();
 builder.Services.AddAutoMapper(typeof(ApiMappingProfile));
 builder.Services.AddScoped<IUserRepository,UserRepository>();
 builder.Services.AddEndpointsApiExplorer();
@@ -18,8 +29,24 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
+builder.Services.AddControllers(options =>
+{
+    
+    options.Filters.Add<LoggingFilter>();
+    options.Filters.Add<ResponseFilter>();
+});
+builder.Services.AddHangfire(config => config
+    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddHangfireServer();
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<LoggingFilter>();
 builder.Services.AddOpenApi();
 builder.Services.AddDbContext<AppDbContext>(
     options =>
@@ -32,6 +59,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI();
+app.UseHangfireDashboard("/hangfire");
 }
 app.MapControllers();
 app.UseHttpsRedirection();

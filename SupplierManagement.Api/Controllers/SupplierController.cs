@@ -82,15 +82,15 @@ public class SupplierController : ControllerBase
                         var existing = supp.Products.FirstOrDefault(p => p.ProductId == pDto.ProductId);
                         if (existing != null)
                         {
-                             _mapper.Map(pDto, existing);
+                            _mapper.Map(pDto, existing);
                         }
                     }
                     else
                     {
-                       var newProduct = _mapper.Map<Product>(pDto); 
-            if (string.IsNullOrWhiteSpace(newProduct.Category))
-                newProduct.Category = dto.CatalogType;
-            newProduct.SupplierId = supp.SupplierId;
+                        var newProduct = _mapper.Map<Product>(pDto);
+                        if (string.IsNullOrWhiteSpace(newProduct.Category))
+                            newProduct.Category = dto.CatalogType;
+                        newProduct.SupplierId = supp.SupplierId;
                         supp.Products.Add(newProduct);
                     }
                 }
@@ -129,6 +129,6 @@ public class SupplierController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
-
+   
 }
 

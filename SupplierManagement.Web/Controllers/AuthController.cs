@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SupplierManagement.Web.Models;
+using SupplierManagement.Web.MVCDTO;
 public class AuthController : Controller
 {
     private readonly MVCAuthService _service;

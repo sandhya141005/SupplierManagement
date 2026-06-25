@@ -1,8 +1,9 @@
+
 function initializeSupplierForm(options) {
     isEdit = options.isEdit;
     supplierId = options.supplierId;
     deletedProductIds = [];
- function showError(messages) {
+    function showError(messages) {
         const box = document.getElementById('jsErrorBox');
         if (!Array.isArray(messages)) messages = [messages];
         box.innerHTML = messages.map(m => `<div>${m}</div>`).join('');
@@ -79,7 +80,7 @@ function initializeSupplierForm(options) {
                 });
             });
     });
-  document.getElementById("addProductBtn").addEventListener("click", function () {
+    document.getElementById("addProductBtn").addEventListener("click", function () {
         clearError();
         const rawValue = document.getElementById("TotalProducts").value;
         const totalProducts = parseInt(rawValue, 10);
@@ -124,7 +125,7 @@ function initializeSupplierForm(options) {
     });
 
     document.getElementById("TotalProducts").addEventListener("input", updateProductCountLabel);
-let hasAnyError = false;
+    let hasAnyError = false;
     document.getElementById("supplierForm").addEventListener("submit", function (e) {
        clearError();
         clearInlineErrors();
@@ -133,7 +134,7 @@ let hasAnyError = false;
         const countErrors = [];      
         let hasProductFieldError = false;
         let hasAnyError = false;
-   const total = parseInt(document.getElementById("TotalProducts").value, 10);
+        const total = parseInt(document.getElementById("TotalProducts").value, 10);
         const cards = document.querySelectorAll('#productsContainer .product-card');
         const cardCount = cards.length;
 
@@ -179,30 +180,22 @@ let hasAnyError = false;
             showError(countErrors);
         }
 
-       const checkedPayments = document.querySelectorAll('input[name="SelectedPaymentMethods"]:checked');
-const paymentError = document.getElementById('paymentError');
+        const checkedPayments = document.querySelectorAll('input[name="SelectedPaymentMethods"]:checked');
+        const paymentError = document.getElementById('paymentError');
 
-if (checkedPayments.length === 0) {
-    if (paymentError) paymentError.style.display = 'block';
-    hasProductFieldError = true;
-} else {
-    if (paymentError) paymentError.style.display = 'none';
-}
+        if (checkedPayments.length === 0) {
+            if (paymentError) paymentError.style.display = 'block';
+            hasProductFieldError = true;
+        } 
+        else {
+            if (paymentError) paymentError.style.display = 'none';
+        }
         const formIsValid = $("#supplierForm").valid();
-console.log({
-    total,
-    cardCount,
-    countErrors,
-    formIsValid
-});
-
- if (!formIsValid || countErrors.length > 0 || hasProductFieldError)
-{
-    e.preventDefault();
-    return;
-}
-
-
+        if (!formIsValid || countErrors.length > 0 || hasProductFieldError)
+        {
+            e.preventDefault();
+            return;
+        }
         const hiddenContainer = document.getElementById("hiddenInputsContainer");
         hiddenContainer.innerHTML = "";
         const razorCount = document.querySelectorAll(

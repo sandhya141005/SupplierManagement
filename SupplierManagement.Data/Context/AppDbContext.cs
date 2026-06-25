@@ -20,56 +20,14 @@ public class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Product>()
-            .Property(p => p.Price)
-            .HasPrecision(18, 2);
-
-        modelBuilder.Entity<Product>()
-            .Property(p => p.Discount)
-            .HasPrecision(18, 2);
-
-        modelBuilder.Entity<Order>()
-            .Property(o => o.TotalAmount)
-            .HasPrecision(18, 2);
-
-        modelBuilder.Entity<OrderItem>()
-            .Property(o => o.Price)
-            .HasPrecision(18, 2);
-
-        modelBuilder.Entity<OrderItem>()
-            .Property(o => o.Discount)
-            .HasPrecision(18, 2);
-
-        modelBuilder.Entity<OrderItem>()
-            .Property(o => o.LineTotal)
-            .HasPrecision(18, 2);
-        modelBuilder.Entity<CartItem>()
-        .Property(c => c.Price).HasPrecision(18, 2);
-        modelBuilder.Entity<CartItem>()
-            .Property(c => c.Discount).HasPrecision(18, 2);
-
-        /*
-            modelBuilder.Entity<Supplier>()
-                .HasOne(s => s.Country)
-                .WithMany()
-                .HasForeignKey(s => s.CountryId)
-                .OnDelete(DeleteBehavior.NoAction);
-
-            modelBuilder.Entity<Supplier>()
-                .HasOne(s => s.State)
-                .WithMany()
-                .HasForeignKey(s => s.StateId)
-                .OnDelete(DeleteBehavior.NoAction);
-
-            modelBuilder.Entity<Supplier>()
-                .HasOne(s => s.City)
-                .WithMany()
-                .HasForeignKey(s => s.CityId)
-                .OnDelete(DeleteBehavior.NoAction);
-                */
-        modelBuilder.Entity<Product>()
-        .HasOne(p => p.Supplier)
-        .WithMany(s => s.Products)
-        .HasForeignKey(p => p.SupplierId);
+        modelBuilder.Entity<Product>().Property(p => p.Price) .HasPrecision(18, 2);//absence of these causes arith overflow/unwanted truncation/store tyoe errors
+        modelBuilder.Entity<Product>().Property(p => p.Discount).HasPrecision(18, 2);
+        modelBuilder.Entity<Order>().Property(o => o.TotalAmount).HasPrecision(18, 2);
+        modelBuilder.Entity<OrderItem>().Property(o => o.Price) .HasPrecision(18, 2);
+        modelBuilder.Entity<OrderItem>().Property(o => o.Discount).HasPrecision(18, 2);
+        modelBuilder.Entity<OrderItem>().Property(o => o.LineTotal).HasPrecision(18, 2);
+        modelBuilder.Entity<CartItem>().Property(c => c.Price).HasPrecision(18, 2);
+        modelBuilder.Entity<CartItem>().Property(c => c.Discount).HasPrecision(18, 2);
+        modelBuilder.Entity<Product>().HasOne(p => p.Supplier).WithMany(s => s.Products).HasForeignKey(p => p.SupplierId); //nav prop error
     }
 }

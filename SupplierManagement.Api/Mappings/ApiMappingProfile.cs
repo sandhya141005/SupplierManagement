@@ -10,21 +10,16 @@ public class ApiMappingProfile : Profile
     {
         CreateMap<RegisterDTO, User>()
             .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.IsAdmin ? "Admin" : "User"));
-
         CreateMap<User, UserDTO>();
-
-        CreateMap<SupplierDTO, Supplier>()
-    .ForMember(dest => dest.Products, opt => opt.Ignore());
-
+       
+        CreateMap<SupplierDTO, Supplier>().ForMember(dest => dest.Products, opt => opt.Ignore());
         CreateMap<Supplier, SupplierDTO>()
             .ForMember(dest => dest.DeletedProductIds, opt => opt.Ignore());
-
         CreateMap<Product, ProductDTO>();
 
         CreateMap<ProductDTO, Product>();
         CreateMap<CartItem, CartItemDTO>().ReverseMap();
-
-        // Order
+       
         CreateMap<Order, OrderDTO>()
             .ForMember(dest => dest.OrderDate,
                 opt => opt.MapFrom(src => src.OrderDate.ToString("dd-MMM-yyyy HH:mm")))
@@ -36,10 +31,8 @@ public class ApiMappingProfile : Profile
                 opt => opt.MapFrom(src => DateTime.Now))
             .ForMember(dest => dest.OrderItems, opt => opt.Ignore());
 
-        // OrderItem
+        
         CreateMap<OrderItem, OrderItemDTO>().ReverseMap();
-
-        // PlaceOrderDTO → Order
         CreateMap<PlaceOrderDTO, Order>()
             .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => DateTime.Now))
             .ForMember(dest => dest.OrderNumber,
@@ -49,7 +42,7 @@ public class ApiMappingProfile : Profile
             .ForMember(dest => dest.OrderItems,
                 opt => opt.MapFrom(src => src.Items));
 
-        // OrderItemDTO → OrderItem
+       
         CreateMap<OrderItemDTO, OrderItem>()
             .ForMember(dest => dest.LineTotal,
                 opt => opt.MapFrom(src => (src.Price - src.Discount) * src.Quantity));

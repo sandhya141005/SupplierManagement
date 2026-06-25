@@ -12,5 +12,5 @@ public class Supplier
     public int StateId { get; set; }
     public int CityId { get; set; }
     public string? ContactNo { get; set; } 
-      public List<Product> Products { get; set; } = new();
+    public List<Product> Products { get; set; } = new();
 }

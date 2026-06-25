@@ -58,6 +58,7 @@ public class SupplierController : Controller
     [HttpGet]
     public async Task<IActionResult> Add()
     {
+
         var model = new SupplierViewModel { Countries = await _service.GetCountries() };
         return View("SupplierForm", model);
     }
@@ -69,13 +70,13 @@ public class SupplierController : Controller
         supplier.PaymentMethodsAllowed = string.Join(", ", supplier.SelectedPaymentMethods);
 
         supplier.Products = supplier.Products.Where(p => !string.IsNullOrWhiteSpace(p.ProductName)).ToList();
-        for (int i = 0; i < supplier.Products.Count; i++)
+
         if (!ModelState.IsValid)
         {
             await ReloadDropdowns(supplier);
             return View("SupplierForm", supplier);
         }
-       
+
         var (success, error) = await _service.Add(supplier);
         if (!success)
         {
@@ -100,5 +101,10 @@ public class SupplierController : Controller
         if (supplier == null)
             return NotFound();
         return View("~/Views/Supplier/Details.cshtml", supplier);
+    }
+    [HttpGet("test-error")]
+    public IActionResult TestError()
+    {
+        throw new Exception("Testing API exception filter");
     }
 }

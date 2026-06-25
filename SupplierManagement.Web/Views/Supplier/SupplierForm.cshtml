@@ -186,13 +186,10 @@
                         </div>
                         <div class="form-group">
                             @Html.LabelFor(m => m.Products[i].CreatedDate, "Created Date")
-
                             <input type="date" name="Products[@i].CreatedDate" class="prod-date"
                                    value="@(Model.Products[i].CreatedDate?.ToString("yyyy-MM-dd") ?? "")" />
 
-                            @Html.ValidationMessageFor(
-                                m => m.Products[i].CreatedDate,
-                                "",
+                            @Html.ValidationMessageFor(m => m.Products[i].CreatedDate, "",
                                 new { style = "color:#B71C1C;font-size:0.8rem;" })
                         </div>
                     </div>

@@ -47,7 +47,10 @@ builder.Services.AddControllersWithViews()
     .AddJsonOptions(options => {
         options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
     });
-
+builder.Services.AddHttpClient<MVCAnalyticsService>(client =>
+{
+    client.BaseAddress = new Uri("http://localhost:5165/");
+});
 var app = builder.Build();
 
 app.UseStaticFiles();

@@ -89,25 +89,11 @@ public class MVCSupplierService
         FormatCreatedDate(result);
 
         var countries = await _locationService.GetCountries();
-
-        result.Country =
-            countries.FirstOrDefault(
-                c => c.Value == result.CountryId.ToString())?.Text ?? "";
-
-        var states =
-            await _locationService.GetStates(result.CountryId);
-
-        result.State =
-            states.FirstOrDefault(
-                s => s.Value == result.StateId.ToString())?.Text ?? "";
-
-        var cities =
-            await _locationService.GetCities(result.StateId);
-
-        result.City =
-            cities.FirstOrDefault(
-                c => c.Value == result.CityId.ToString())?.Text ?? "";
-
+        result.Country =countries.FirstOrDefault(c => c.Value == result.CountryId.ToString())?.Text ?? "";
+        var states =await _locationService.GetStates(result.CountryId);
+        result.State =states.FirstOrDefault(s => s.Value == result.StateId.ToString())?.Text ?? "";
+        var cities =await _locationService.GetCities(result.StateId);
+        result.City =cities.FirstOrDefault( c => c.Value == result.CityId.ToString())?.Text ?? "";
         return result;
     }
     public async Task<(bool Success, string Error)> Edit(int id, SupplierViewModel model)
@@ -117,16 +103,16 @@ public class MVCSupplierService
             System.Globalization.DateTimeStyles.None, out var createdDate))
             return (false, "Invalid date format. Use dd-Mon-yyyy e.g. 11-Jun-2026");
          var dto = _mapper.Map<SupplierDTO>(model);
-    dto.CreatedDate = createdDate;
-    foreach (var product in dto.Products)
-    {
-        if (product.CreatedDate == default)
-            product.CreatedDate = DateTime.Now;
-    }
-        var response = await _http.PutAsJsonAsync($"api/supplier/{id}", dto);
-        if (!response.IsSuccessStatusCode)
-            return (false, await response.Content.ReadAsStringAsync());
-        return (true, "");
+        dto.CreatedDate = createdDate;
+        foreach (var product in dto.Products)
+        {
+            if (product.CreatedDate == default)
+                product.CreatedDate = DateTime.Now;
+        }
+            var response = await _http.PutAsJsonAsync($"api/supplier/{id}", dto);
+            if (!response.IsSuccessStatusCode)
+                return (false, await response.Content.ReadAsStringAsync());
+            return (true, "");
     }
     public async Task<(bool Success, string Error)> Add(SupplierViewModel model)
     {

@@ -34,6 +34,7 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public IActionResult Login(LoginDTO dto)
     {
+     // throw new Exception("Trying to see exceptions");
         var user = _service.Login(dto.Email, dto.Password);
         if (user == null)
         {
@@ -42,7 +43,7 @@ public class AuthController : ControllerBase
         var userDto = _mapper.Map<UserDTO>(user);
         return Ok(user);
     }
-    [HttpGet]
+   /* [HttpGet]
     public IActionResult GetUsers()
     {
         var users = new List<UserDTO>
@@ -51,7 +52,7 @@ public class AuthController : ControllerBase
         };
 
         return Ok(users);
-    }
+    }*/
     
 }
 

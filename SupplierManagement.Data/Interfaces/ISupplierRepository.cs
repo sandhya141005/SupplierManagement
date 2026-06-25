@@ -7,6 +7,5 @@ public interface ISupplierRepository
     void Delete(int id);
     Supplier? GetById(int id);
     void Edit(Supplier supplier);
-
     void Add(Supplier supplier);
 }
