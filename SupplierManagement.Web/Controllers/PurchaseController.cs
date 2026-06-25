@@ -1,9 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
+using SupplierManagement.Web.Services;
 
 public class PurchasesController : Controller
 {
     private readonly MVCOrderService _orderService;
-    public PurchasesController(MVCOrderService orderService) => _orderService = orderService;
+    private readonly PdfService _pdfservice;
+    public PurchasesController(MVCOrderService orderService,PdfService pdfservice)
+    {
+        _orderService = orderService;
+        _pdfservice=pdfservice;
+    } 
 
     public async Task<IActionResult> Index()
     {
@@ -18,4 +24,14 @@ public class PurchasesController : Controller
         if (order == null) return NotFound();
         return View(order);
     }
+    public async Task<IActionResult> DownloadBill(int id)
+{
+    var order = await _orderService.GetById(id);
+    if (order == null) return NotFound();
+
+    var userName = HttpContext.Session.GetString("UserName") ?? "Customer";
+    var pdf = _pdfservice.GenerateOrderBill(order, userName);
+
+    return File(pdf, "application/pdf", $"Bill-{order.OrderNumber}.pdf");
+}
 }

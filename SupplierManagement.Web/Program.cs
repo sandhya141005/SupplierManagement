@@ -1,5 +1,6 @@
 using SupplierManagement.Web.Mappings;
 using SupplierManagement.Web.Filters;
+using SupplierManagement.Web.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAutoMapper(typeof(WebMappingProfile));
@@ -43,6 +44,7 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+builder.Services.AddScoped<PdfService>();
 builder.Services.AddControllersWithViews()
     .AddJsonOptions(options => {
         options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;

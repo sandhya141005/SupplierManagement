@@ -50,5 +50,6 @@
     <div class="form-actions">
         @Html.ActionLink("My Purchases", "Index", "Purchases", null, new { @class = "btn-secondary-rc" })
         @Html.ActionLink("Continue Shopping", "Index", "Supplier", null, new { @class = "btn-primary-rc" })
+        @Html.ActionLink("Download Bill (PDF)", "DownloadBill", "Purchases",new { id = Model.OrderId }, new { @class = "btn-primary-rc" })
     </div>
 </div>
