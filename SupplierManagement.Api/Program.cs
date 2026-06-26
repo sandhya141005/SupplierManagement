@@ -29,10 +29,10 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
-
+builder.Services.AddScoped<CustomHeaderFilter>();
 builder.Services.AddControllers(options =>
 {
-    
+    options.Filters.Add<CustomHeaderFilter>();
     options.Filters.Add<LoggingFilter>();
     options.Filters.Add<ResponseFilter>();
 });

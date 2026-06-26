@@ -11,28 +11,34 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient<MVCUserService>(client =>
 {
     client.BaseAddress = new Uri("http://localhost:5165/");
+    client.DefaultRequestHeaders.Add("X-Api-Key", "SupplierHub'26");
 });
 
 builder.Services.AddHttpClient<MVCAuthService>(client =>
 {
     client.BaseAddress = new Uri("http://localhost:5165/");
+    client.DefaultRequestHeaders.Add("X-Api-Key", "SupplierHub'26");
 });
 builder.Services.AddHttpClient<MVCSupplierService>(client =>
 {
     client.BaseAddress = new Uri("http://localhost:5165/");
+    client.DefaultRequestHeaders.Add("X-Api-Key", "SupplierHub'26");
 });
 builder.Services.AddHttpClient<MVCLocationService>(client =>
 {
     client.BaseAddress = new Uri("http://localhost:5165/");
+    client.DefaultRequestHeaders.Add("X-Api-Key", "SupplierHub'26");
 });
 builder.Services.AddHttpClient<MVCCartService>(client =>
 {
     client.BaseAddress = new Uri("http://localhost:5165/");
+    client.DefaultRequestHeaders.Add("X-Api-Key", "SupplierHub'26");
 });
 
 builder.Services.AddHttpClient<MVCOrderService>(client =>
 {
     client.BaseAddress = new Uri("http://localhost:5165/");
+    client.DefaultRequestHeaders.Add("X-Api-Key", "SupplierHub'26");
 });
 builder.Services.AddControllersWithViews(options =>
 {
@@ -46,12 +52,14 @@ builder.Services.AddSession(options =>
 });
 builder.Services.AddScoped<PdfService>();
 builder.Services.AddControllersWithViews()
-    .AddJsonOptions(options => {
+    .AddJsonOptions(options =>
+    {
         options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
     });
 builder.Services.AddHttpClient<MVCAnalyticsService>(client =>
 {
     client.BaseAddress = new Uri("http://localhost:5165/");
+    client.DefaultRequestHeaders.Add("X-Api-Key", "SupplierHub'26");
 });
 var app = builder.Build();
 
