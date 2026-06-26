@@ -7,22 +7,32 @@ using SupplierManagement.Data.Repositories;
 using SupplierManagement.Api.Mappings;
 using SupplierManagement.Api.Filters;
 using SupplierManagement.Api.Email;
+using SupplierManagement.Api.Middleware;
 using Serilog;
 using Hangfire;
 using Hangfire.SqlServer;
-Log.Logger = new LoggerConfiguration()
+/*Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .WriteTo.File(
         "Logs/log-.txt",
         rollingInterval: RollingInterval.Day)
-    .CreateLogger();
+    .CreateLogger();*/
 var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console(outputTemplate:
+        "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+    .WriteTo.File(
+        path: "Logs/supplier-hub-.log",
+        rollingInterval: RollingInterval.Day,
+        outputTemplate: "[{Timestamp:dd-MMM-yyyy HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+    .CreateLogger();
 builder.Host.UseSerilog();
 builder.Services.AddAutoMapper(typeof(ApiMappingProfile));
-builder.Services.AddScoped<IUserRepository,UserRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<IUserService,UserService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
 builder.Services.AddControllers();
@@ -59,8 +69,9 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI();
-app.UseHangfireDashboard("/hangfire");
+    app.UseHangfireDashboard("/hangfire");
 }
+app.UseMiddleware<RequestLoggingMiddleware>();
 app.MapControllers();
 app.UseHttpsRedirection();
 
