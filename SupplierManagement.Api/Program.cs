@@ -48,6 +48,7 @@ builder.Services.AddControllers(options =>
     options.Filters.Add<LoggingFilter>();
     options.Filters.Add<ResponseFilter>();
 });
+builder.Services.AddScoped<IRevenueSkill, RevenueSkill>();
 builder.Services.AddHangfire(config => config
     .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
     .UseSimpleAssemblyNameTypeSerializer()
