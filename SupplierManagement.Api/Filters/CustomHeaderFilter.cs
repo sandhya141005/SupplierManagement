@@ -15,6 +15,12 @@ public class CustomHeaderFilter : IActionFilter
 
     public void OnActionExecuting(ActionExecutingContext context)
     {
+        var controller = context.RouteData.Values["controller"]?.ToString();
+
+        if (controller == "Ai")
+        {
+            return;
+        }
         context.HttpContext.Request.Headers.TryGetValue(RequiredHeader, out var value);
 
         _logger.LogInformation(

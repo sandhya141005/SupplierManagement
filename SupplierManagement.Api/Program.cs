@@ -11,6 +11,7 @@ using SupplierManagement.Api.Middleware;
 using Serilog;
 using Hangfire;
 using Hangfire.SqlServer;
+using SupplierManagement.Api.AI;
 /*Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .WriteTo.File(
@@ -40,6 +41,7 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<CustomHeaderFilter>();
+builder.Services.AddHttpClient<IAiService,AiService>();
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add<CustomHeaderFilter>();
