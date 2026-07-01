@@ -1,0 +1,133 @@
+@{
+    ViewData["Title"] = "AI Revenue Chat";
+}
+
+<div class="container mt-4" style="max-width: 800px;">
+
+    <h4 class="mb-4" style="text-align: center; ">My Business Assistant</h4>
+    <div id="chatBox"
+         style="height: 450px; overflow-y: auto; border: 1px solid #dee2e6;
+                border-radius: 8px; padding: 16px; background: #FFFFFF">
+        <div id="placeholder" class="text-muted text-center mt-5">
+            Ask a question about supplier revenue.
+        </div>
+    </div>
+    <div class="input-group mt-3">
+        <input type="text" style="background:#FFFFFF"
+               id="questionInput"
+               class="form-control"
+               placeholder="e.g. Which supplier has the highest revenue?" />
+        <button id="askBtn" style="background-color: #6D4C41; border: none; color: white;" class="btn ">Ask</button>
+    </div>
+    <div id="errorMsg" class="text-danger mt-2" style="display:none;"></div>
+
+</div>
+
+<script>
+    const chatBox = document.getElementById('chatBox');
+    const questionInput = document.getElementById('questionInput');
+    const askBtn = document.getElementById('askBtn');
+    const errorMsg = document.getElementById('errorMsg');
+    const placeholder = document.getElementById('placeholder');
+
+    function appendMessage(role, text) {
+        if (placeholder) placeholder.remove();
+
+        const isUser = role === 'user';
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'd-flex mb-3 ' + (isUser ? 'justify-content-end' : 'justify-content-start');
+
+        const bubble = document.createElement('div');
+        bubble.style.cssText = `
+            max-width: 70%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            white-space: pre-line;
+            font-size: 0.92rem;
+            background: ${isUser ? '#6D4C41' : '#D7CCC8'};
+            color: ${isUser ? '#ffffff' : '#212529'};
+            border: ${isUser ? 'none' : '1px solid #dee2e6'};
+        `;
+        bubble.textContent = text;
+
+        wrapper.appendChild(bubble);
+        chatBox.appendChild(wrapper);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function appendThinking() {
+        if (placeholder) placeholder.remove();
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'd-flex mb-3 justify-content-start';
+        wrapper.id = 'thinkingBubble';
+
+        const bubble = document.createElement('div');
+        bubble.style.cssText = `
+            padding: 10px 14px;
+            border-radius: 12px;
+            background: #ffffff;
+            border: 1px solid #dee2e6;
+            color: #6c757d;
+            font-size: 0.92rem;
+        `;
+        bubble.textContent = 'Thinking...';
+
+        wrapper.appendChild(bubble);
+        chatBox.appendChild(wrapper);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function removeThinking() {
+        const el = document.getElementById('thinkingBubble');
+        if (el) el.remove();
+    }
+
+    async function sendQuestion() {
+        const question = questionInput.value.trim();
+        if (!question) return;
+
+        errorMsg.style.display = 'none';
+        questionInput.value = '';
+        askBtn.disabled = true;
+        questionInput.disabled = true;
+
+        appendMessage('user', question);
+        appendThinking();
+
+        try {
+            const response = await fetch('/ai/askquestion', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question })
+            });
+
+            const data = await response.json();
+            removeThinking();
+
+            if (!response.ok) {
+                errorMsg.textContent = data.error || 'Something went wrong.';
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            appendMessage('ai', data.aiAnswer);
+
+        } catch (err) {
+            removeThinking();
+            errorMsg.textContent = 'Failed to reach the server. Please try again.';
+            errorMsg.style.display = 'block';
+        } finally {
+            askBtn.disabled = false;
+            questionInput.disabled = false;
+            questionInput.focus();
+        }
+    }
+
+    askBtn.addEventListener('click', sendQuestion);
+
+    questionInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') sendQuestion();
+    });
+</script>
