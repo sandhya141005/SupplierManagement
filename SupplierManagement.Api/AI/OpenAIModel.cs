@@ -19,4 +19,8 @@ namespace SupplierManagement.Api.AI
     {
         public GroqMessage message { get; set; }
     }
+    public class ChatRequest
+    {
+        public string Question { get; set; }
+    }
 }

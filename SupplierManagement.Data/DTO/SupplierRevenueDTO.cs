@@ -1,4 +1,4 @@
-namespace SupplierManagement.Business.DTO
+namespace SupplierManagement.Data.DTO
 {
     public class SupplierRevenueDTO
     {

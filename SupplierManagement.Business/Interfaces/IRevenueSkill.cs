@@ -1,4 +1,4 @@
-using SupplierManagement.Business.DTO;
+using SupplierManagement.Data.DTO;
 
 namespace SupplierManagement.Business.Interfaces
 {

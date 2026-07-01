@@ -19,6 +19,10 @@ builder.Services.AddHttpClient<MVCAuthService>(client =>
     client.BaseAddress = new Uri("http://localhost:5165/");
     client.DefaultRequestHeaders.Add("X-Api-Key", "SupplierHub'26");
 });
+builder.Services.AddHttpClient<MVCAiService>(client =>
+{
+    client.BaseAddress = new Uri("http://localhost:5165/");
+});
 builder.Services.AddHttpClient<MVCSupplierService>(client =>
 {
     client.BaseAddress = new Uri("http://localhost:5165/");

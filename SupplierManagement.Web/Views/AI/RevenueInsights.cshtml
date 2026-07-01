@@ -1,0 +1,47 @@
+<div class="container mt-4">
+    <div class="mb-4">
+        <h2 style="text-align: center;">My Business Assistant</h2>
+    </div>
+
+    <div class="input-group mb-3">
+        <input type="text" id="questionInput" class="form-control"
+               placeholder="e.g. Which supplier generated the highest revenue?" />
+        <button id="generateBtn"  style="background-color:#6D4C41"class="btn btn-primary">Ask</button>
+    </div>
+
+    <div id="loadingSpinner" class="text-center my-4" style="display:none;">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2">Analyzing revenue data...</p>
+    </div>
+
+    <div id="resultContainer"></div>
+</div>
+
+<script>
+    document.getElementById('generateBtn').addEventListener('click', function () {
+        const question = document.getElementById('questionInput').value.trim();
+        if (!question) {
+            alert('Please enter a question.');
+            return;
+        }
+
+        const spinner = document.getElementById('loadingSpinner');
+        const container = document.getElementById('resultContainer');
+        const btn = document.getElementById('generateBtn');
+
+        spinner.style.display = 'block';
+        container.innerHTML = '';
+        btn.disabled = true;
+
+        fetch('/AI/GetInsights?question=' + encodeURIComponent(question))
+            .then(r => r.text())
+            .then(html => { container.innerHTML = html; })
+            .catch(() => {
+                container.innerHTML = '<div class="alert alert-danger">Failed to load insights.</div>';
+            })
+            .finally(() => {
+                spinner.style.display = 'none';
+                btn.disabled = false;
+            });
+    });
+</script>

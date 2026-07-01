@@ -48,7 +48,6 @@ builder.Services.AddControllers(options =>
     options.Filters.Add<LoggingFilter>();
     options.Filters.Add<ResponseFilter>();
 });
-builder.Services.AddScoped<IRevenueSkill, RevenueSkill>();
 builder.Services.AddHangfire(config => config
     .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
     .UseSimpleAssemblyNameTypeSerializer()
@@ -56,6 +55,9 @@ builder.Services.AddHangfire(config => config
     .UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddHangfireServer();
+builder.Services.AddScoped<IRevenueRepository, RevenueRepository>();
+
+builder.Services.AddScoped<IRevenueSkill, RevenueSkill>();
 builder.Services.Configure<EmailSettings>(
     builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddScoped<IEmailService, EmailService>();

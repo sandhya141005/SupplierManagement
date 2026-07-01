@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SupplierManagement.Api.AI;
+using SupplierManagement.Data.DTO;
 using SupplierManagement.Business.Interfaces;
 namespace SupplierManagement.Api.Controllers
 {
@@ -22,23 +23,21 @@ namespace SupplierManagement.Api.Controllers
             var result = await _aiService.GetCompletionAsync("Hello GPT");
             return Ok(new { response = result });
         }
-        [HttpGet("revenue-insights")]
-        public async Task<IActionResult> RevenueInsights()
+        [HttpPost("chat")]
+        public async Task<IActionResult> Chat([FromBody] ChatRequest request)
         {
+            if (string.IsNullOrWhiteSpace(request?.Question))
+                return BadRequest(new { error = "Question cannot be empty." });
+
             var topSuppliers = await _revenueSkill.GetTopSuppliersAsync(5);
 
             if (!topSuppliers.Any())
-                return Ok(new { summary = "No revenue data available yet." });
+                return Ok(new { topSuppliers, aiAnswer = "No revenue data available to answer your question." });
 
-            var prompt = AiService.BuildRevenueInsightsPrompt(topSuppliers);
-            var aiResponse = await _aiService.GetCompletionAsync(prompt);
+            var prompt = AiService.BuildRevenueInsightsPrompt(topSuppliers, request.Question);
+            var aiAnswer = await _aiService.GetCompletionAsync(prompt);
 
-            return Ok(new
-            {
-                topSuppliers,
-                aiSummary = aiResponse
-            });
+            return Ok(new { topSuppliers, aiAnswer });
         }
-
     }
 }

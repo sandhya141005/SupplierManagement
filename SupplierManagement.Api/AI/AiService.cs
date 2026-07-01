@@ -1,7 +1,7 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using SupplierManagement.Business.DTO;
+using SupplierManagement.Data.DTO;
 namespace SupplierManagement.Api.AI
 {
     public class AiService : IAiService
@@ -34,39 +34,35 @@ namespace SupplierManagement.Api.AI
             var response = await _httpClient.PostAsync("https://api.groq.com/openai/v1/chat/completions", content);
             response.EnsureSuccessStatusCode();
             var responseJson = await response.Content.ReadAsStringAsync();
-            Console.WriteLine(response.StatusCode);
-            Console.WriteLine(responseJson);
+            //Console.WriteLine(response.StatusCode);
+            //Console.WriteLine(responseJson);
             var parsed = JsonSerializer.Deserialize<GroqResponse>(responseJson);
             return parsed?.choices?[0]?.message?.content ?? "No response.";
 
         }
-        public static string BuildRevenueInsightsPrompt(List<SupplierRevenueDTO> suppliers)
+        public static string BuildRevenueInsightsPrompt(List<SupplierRevenueDTO> suppliers, string userQuestion)
         {
             var sb = new StringBuilder();
-            sb.AppendLine("You are a financial business analyst reviewing supplier revenue data.");
-            sb.AppendLine("Below is the Top 5 suppliers ranked by revenue, already calculated from our database.");
-            sb.AppendLine("Do NOT recalculate any numbers. Only analyze the data given.");
+            sb.AppendLine("You are a financial business analyst for a supplier management platform.");
+            sb.AppendLine("You have been given pre-calculated supplier revenue data from the database.");
+            sb.AppendLine("Answer the user's question using ONLY the data provided below.");
+            sb.AppendLine("Do NOT make up numbers. Do NOT assume data not given.");
             sb.AppendLine();
-            sb.AppendLine("Top 5 Suppliers:");
-
-            int rank = 1;
+            sb.AppendLine(" BUSINESS DATA ");
             foreach (var s in suppliers)
             {
-                sb.AppendLine($"{rank}. {s.CompanyName} — Revenue: ₹{s.Revenue:N0}, Orders: {s.OrderCount}");
-                rank++;
+                sb.AppendLine($" {s.CompanyName} — Revenue: ₹{s.Revenue}, Orders: {s.OrderCount}");
+        
             }
-
             sb.AppendLine();
-            sb.AppendLine("Based on this data, provide:");
-            sb.AppendLine("1. Executive Summary — identify the best-performing supplier.");
-            sb.AppendLine("2. Revenue Trends — state whether revenue is concentrated among a few suppliers or evenly spread.");
-            sb.AppendLine("3. Supplier Performance Analysis — highlight weaker suppliers in this list.");
-            sb.AppendLine("4. Business Risks — any risk from over-reliance on top suppliers.");
-            sb.AppendLine("5. Recommendations — give 2-3 concise, actionable financial recommendations.");
+            sb.AppendLine(" USER QUESTION ");
+            sb.AppendLine(userQuestion);
             sb.AppendLine();
-            sb.AppendLine("Keep the entire response under 200 words. Be direct and business-focused, no fluff.");
+            sb.AppendLine("Answer concisely and professionally. Keep response under 150 words.");
 
             return sb.ToString();
         }
+
+
     }
 }

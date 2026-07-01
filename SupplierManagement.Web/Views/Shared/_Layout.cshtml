@@ -22,12 +22,8 @@
                     Supplier Hub
                 </a>
 
-                <button class="navbar-toggler"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target=".navbar-collapse"
-                        aria-label="Toggle navigation"
-                        style="border-color:rgba(215,204,200,0.4);">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                        aria-label="Toggle navigation" style="border-color:rgba(215,204,200,0.4);">
                     <span class="navbar-toggler-icon" style="filter:invert(1);"></span>
                 </button>
 
@@ -45,96 +41,94 @@
                             @if (role == "User")
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link"
-                                       asp-controller="Supplier"
-                                       asp-action="Index">
+                                    <a class="nav-link" asp-controller="Supplier" asp-action="Index">
                                         Home
                                     </a>
                                 </li>
 
                                 <li class="nav-item">
-                                    <a class="nav-link"
-                                       asp-controller="Cart"
-                                       asp-action="Index">
+                                    <a class="nav-link" asp-controller="Cart" asp-action="Index">
                                         My Cart
                                     </a>
                                 </li>
 
                                 <li class="nav-item">
-                                    <a class="nav-link"
-                                       asp-controller="Purchases"
-                                       asp-action="Index">
+                                    <a class="nav-link" asp-controller="Purchases" asp-action="Index">
                                         My Purchases
                                     </a>
                                 </li>
-                            }
+                                
+                                }
                             else if (role == "Admin")
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link" asp-controller="Supplier" asp-action="Index">
+                                            Home
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link" asp-controller="Analytics" asp-action="Index">Analytics</a>
+                                    </li>
+                                    <li class="nav-item">
+                                    <a class="nav-link" asp-controller="AI" asp-action="RevenueInsights">
+                                        AI Revenue Insights</a>
+                                    </li>
+                                }
+                            }
+
+                        </ul>
+
+                        <ul class="navbar-nav align-items-center" style="gap:0.5rem;">
+
+                            @if (!string.IsNullOrEmpty(role))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link"
-                                       asp-controller="Supplier"
-                                       asp-action="Index">
-                                        Home
-                                    </a>
+                                    <span class="navbar-user-badge">
+                                        <span style="font-size:1rem;">&#9786;</span>
+                                        @userName
+
+                                        @if (role == "Admin")
+                                        {
+                                            <span class="badge-admin" style="margin-left:4px;">
+                                                Admin
+                                            </span>
+                                        }
+                                    </span>
                                 </li>
 
                                 <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Analytics" asp-action="Index">Analytics</a>
+                                    @using (Html.BeginForm("Logout", "Auth", FormMethod.Post,
+                                        new { style = "display:inline;" }))
+                                    {
+                                        <button type="submit" class="nav-link nav-logout"
+                                                style="background:none;border:none;cursor:pointer;">
+                                            Sign out
+                                        </button>
+                                    }
                                 </li>
                             }
-                        }
 
-                    </ul>
+                        </ul>
 
-                    <ul class="navbar-nav align-items-center" style="gap:0.5rem;">
-
-                        @if (!string.IsNullOrEmpty(role))
-                        {
-                            <li class="nav-item">
-                                <span class="navbar-user-badge">
-                                    <span style="font-size:1rem;">&#9786;</span>
-                                    @userName
-
-                                    @if (role == "Admin")
-                                    {
-                                        <span class="badge-admin" style="margin-left:4px;">
-                                            Admin
-                                        </span>
-                                    }
-                                </span>
-                            </li>
-
-                            <li class="nav-item">
-                                @using (Html.BeginForm("Logout", "Auth", FormMethod.Post,
-                                    new { style = "display:inline;" }))
-                                {
-                                    <button type="submit"
-                                            class="nav-link nav-logout"
-                                            style="background:none;border:none;cursor:pointer;">
-                                        Sign out
-                                    </button>
-                                }
-                            </li>
-                        }
-
-                    </ul>
-
+                    </div>
                 </div>
-            </div>
-        </nav>
-    </header>
+            </nav>
+        </header>
 
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+        <div class="container">
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+        </div>
 
-    <script src="@(Url.Content("~/lib/jquery/dist/jquery.min.js"))"></script>
-    <script src="@(Url.Content("~/lib/jquery-validation/dist/jquery.validate.min.js"))"></script>
-    <script src="@(Url.Content("~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"))"></script>
+        <script src="@(Url.Content("~/lib/jquery/dist/jquery.min.js"))"></script>
+        <script src="@(Url.Content("~/lib/jquery-validation/dist/jquery.validate.min.js"))"></script>
+        <script
+        src="@(Url.Content("~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"))"></script>
 
-    @await RenderSectionAsync("Scripts", required: false)
+        @await RenderSectionAsync("Scripts", required: false)
 
-</body>
+    </body>
+
 </html>
