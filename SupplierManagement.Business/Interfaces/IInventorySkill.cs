@@ -1,9 +1,9 @@
 using SupplierManagement.Data.DTO;
-
 namespace SupplierManagement.Business.Interfaces
 {
-    public interface IRevenueSkill
+   
+    public interface IInventorySkill
     {
-        Task<List<SupplierRevenueDTO>> GetSuppliersAsync();
+        Task<List<ProductInventoryDTO>> GetStocksAsync();
     }
 }

@@ -11,7 +11,7 @@ public class RevenueRepository : IRevenueRepository
         _context = context;
     }
 
-    public async Task<List<SupplierRevenueDTO>> GetTopSuppliersAsync(int count)
+    public async Task<List<SupplierRevenueDTO>> GetSuppliersAsync()
     {
         var result=await(
                 from o in _context.Orders 
@@ -27,7 +27,6 @@ public class RevenueRepository : IRevenueRepository
                     OrderCount=g.Select(x=>x.OrderId).Distinct().Count()
                 })
                 .OrderByDescending(x=>x.Revenue)
-                .Take(count)
                 .ToListAsync();
                 return result;
     }

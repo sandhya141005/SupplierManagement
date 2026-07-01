@@ -63,6 +63,7 @@ builder.Services.Configure<EmailSettings>(
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<LoggingFilter>();
 builder.Services.AddOpenApi();
+builder.Services.AddScoped<IInventorySkill, InventorySkill>();
 builder.Services.AddDbContext<AppDbContext>(
     options =>
         options.UseSqlServer(

@@ -43,26 +43,50 @@ namespace SupplierManagement.Api.AI
         public static string BuildRevenueInsightsPrompt(List<SupplierRevenueDTO> suppliers, string userQuestion)
         {
             var sb = new StringBuilder();
-            sb.AppendLine("You are a financial business analyst for a supplier management platform.");
-            sb.AppendLine("You have been given pre-calculated supplier revenue data from the database.");
+            sb.AppendLine("You are a financial business analyst.");
+            sb.AppendLine("You have been given the complete supplier revenue dataset from the database.");
             sb.AppendLine("Answer the user's question using ONLY the data provided below.");
-            sb.AppendLine("Do NOT make up numbers. Do NOT assume data not given.");
+            sb.AppendLine("You may perform comparisons, rankings, or aggregations on this data to answer the question.");
+            sb.AppendLine("Do NOT make up data not present in this list.");
             sb.AppendLine();
-            sb.AppendLine(" BUSINESS DATA ");
+            sb.AppendLine("=== COMPLETE SUPPLIER REVENUE DATA ===");
             foreach (var s in suppliers)
             {
-                sb.AppendLine($" {s.CompanyName} — Revenue: ₹{s.Revenue}, Orders: {s.OrderCount}");
-        
+                sb.AppendLine($" {s.CompanyName} — Revenue: ₹{s.Revenue:N0}, Orders: {s.OrderCount}");
             }
+
+            sb.AppendLine($"Total suppliers: {suppliers.Count}");
             sb.AppendLine();
-            sb.AppendLine(" USER QUESTION ");
+            sb.AppendLine("=== USER QUESTION ===");
             sb.AppendLine(userQuestion);
             sb.AppendLine();
             sb.AppendLine("Answer concisely and professionally. Keep response under 150 words.");
 
             return sb.ToString();
         }
+        public static string BuildInventoryInsightsPrompt(List<ProductInventoryDTO> products, string userQuestion)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("You are a supply chain analyst for a supplier management platform.");
+            sb.AppendLine("You have been given pre-fetched inventory data from the database.");
+            sb.AppendLine("Answer the user's question using ONLY the data provided below.");
+            sb.AppendLine("Do NOT make up numbers. Do NOT assume data not given.");
+            sb.AppendLine();
+            sb.AppendLine("=== INVENTORY DATA  ===");
+            foreach (var p in products)
+            {
+                sb.AppendLine($" {p.ProductName} (Supplier: {p.CompanyName}) — Stock: {p.StockQuantity} units");
 
+            }
+            sb.AppendLine($"Total products: {products.Count}");
+            sb.AppendLine();
+            sb.AppendLine("=== USER QUESTION ===");
+            sb.AppendLine(userQuestion);
+            sb.AppendLine();
+            sb.AppendLine("Answer concisely and professionally. Keep response under 150 words.");
+
+            return sb.ToString();
+        }
 
     }
 }

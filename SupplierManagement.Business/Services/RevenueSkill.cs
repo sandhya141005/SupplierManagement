@@ -13,10 +13,10 @@ namespace SupplierManagement.Business.Services
         {
             _repo = repo;
         }
-        public async Task<List<SupplierRevenueDTO>> GetTopSuppliersAsync(int count = 5)
+        public async Task<List<SupplierRevenueDTO>> GetSuppliersAsync()
         {
 
-            return await _repo.GetTopSuppliersAsync(count);
+            return await _repo.GetSuppliersAsync();
         }
     }
 }

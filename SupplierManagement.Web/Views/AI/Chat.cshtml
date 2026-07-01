@@ -5,17 +5,14 @@
 <div class="container mt-4" style="max-width: 800px;">
 
     <h4 class="mb-4" style="text-align: center; ">My Business Assistant</h4>
-    <div id="chatBox"
-         style="height: 450px; overflow-y: auto; border: 1px solid #dee2e6;
-                border-radius: 8px; padding: 16px; background: #FFFFFF">
+    <div id="chatBox" style="height: 450px; overflow-y: auto; border: 1px solid #dee2e6;
+        border-radius: 8px; padding: 16px; background: #FFFFFF">
         <div id="placeholder" class="text-muted text-center mt-5">
             Ask a question about supplier revenue.
         </div>
     </div>
     <div class="input-group mt-3">
-        <input type="text" style="background:#FFFFFF"
-               id="questionInput"
-               class="form-control"
+        <input type="text" style="background:#FFFFFF" id="questionInput" class="form-control"
                placeholder="e.g. Which supplier has the highest revenue?" />
         <button id="askBtn" style="background-color: #6D4C41; border: none; color: white;" class="btn ">Ask</button>
     </div>
@@ -50,7 +47,6 @@
             border: ${isUser ? 'none' : '1px solid #dee2e6'};
         `;
         bubble.textContent = text;
-
         wrapper.appendChild(bubble);
         chatBox.appendChild(wrapper);
         chatBox.scrollTop = chatBox.scrollHeight;
@@ -67,7 +63,7 @@
         bubble.style.cssText = `
             padding: 10px 14px;
             border-radius: 12px;
-            background: #ffffff;
+            background: #D7CCC8;
             border: 1px solid #dee2e6;
             color: #6c757d;
             font-size: 0.92rem;
@@ -76,7 +72,6 @@
 
         wrapper.appendChild(bubble);
         chatBox.appendChild(wrapper);
-        chatBox.scrollTop = chatBox.scrollHeight;
     }
 
     function removeThinking() {
@@ -105,7 +100,6 @@
 
             const data = await response.json();
             removeThinking();
-
             if (!response.ok) {
                 errorMsg.textContent = data.error || 'Something went wrong.';
                 errorMsg.style.display = 'block';

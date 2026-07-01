@@ -3,6 +3,6 @@ namespace SupplierManagement.Data.Interfaces
 {
     public interface IRevenueRepository
     {
-        Task<List<SupplierRevenueDTO>> GetTopSuppliersAsync(int count);
+        Task<List<SupplierRevenueDTO>> GetSuppliersAsync();
     }
 }
