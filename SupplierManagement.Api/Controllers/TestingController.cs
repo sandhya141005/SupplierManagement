@@ -6,31 +6,28 @@ namespace SupplierManagement.Api.Controllers;
 [Route("api/[controller]")]
 public class TestController : ControllerBase
 {
-   
+
     [HttpGet("null")]
     public IActionResult ThrowNull()
     {
         string? s = null;
-        return Ok(s!.Length); 
+        return Ok(s!.Length);
     }
 
     [HttpGet("divide")]
     public IActionResult ThrowDivide()
     {
         int x = 0;
-        return Ok(10 / x); // DivideByZeroException
+        return Ok(10 / x);
     }
 
-    // Test 3 — FormatException
     [HttpGet("format")]
     public IActionResult ThrowFormat()
     {
         var date = DateTime.ParseExact("not-a-date", "dd-MMM-yyyy",
-            System.Globalization.CultureInfo.InvariantCulture); // FormatException
+            System.Globalization.CultureInfo.InvariantCulture);
         return Ok(date);
     }
-
-    // Test 4 — Custom exception message
     [HttpGet("custom")]
     public IActionResult ThrowCustom()
     {

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using SupplierManagement.Api.AI;
 using SupplierManagement.Data.DTO;
 using SupplierManagement.Business.Interfaces;
+using SupplierManagement.Business.Services;
 namespace SupplierManagement.Api.Controllers
 {
     [ApiController]
@@ -11,12 +12,14 @@ namespace SupplierManagement.Api.Controllers
         private readonly IAiService _aiService;
         private readonly IRevenueSkill _revenueSkill;
         private readonly IInventorySkill _inventorySkill;
+        private readonly IOrderSkill _orderSkill;
 
-        public AiController(IAiService aiService, IRevenueSkill revenueSkill, IInventorySkill inventorySkill)
+        public AiController(IAiService aiService, IRevenueSkill revenueSkill, IInventorySkill inventorySkill, IOrderSkill orderSkill)
         {
             _aiService = aiService;
             _revenueSkill = revenueSkill;
             _inventorySkill = inventorySkill;
+            _orderSkill = orderSkill;
         }
 
         [HttpGet("test")]
@@ -59,9 +62,20 @@ namespace SupplierManagement.Api.Controllers
                 var answer = await _aiService.GetCompletionAsync(prompt);
                 return Ok(new { aiAnswer = answer });
             }
+            if (skill == SkillType.Order)
+            {
+                var orders = await _orderSkill.GetOrderSummaryAsync();
 
-            return Ok(new { aiAnswer = "I currently support revenue and inventory analysis." });
+                if (!orders.Any())
+                    return Ok(new { aiAnswer = "No order data available to answer your question." });
+
+                var prompt = AiService.BuildOrderInsightsPrompt(orders, request.Question);
+                var answer = await _aiService.GetCompletionAsync(prompt);
+                return Ok(new { aiAnswer = answer });
+            }
+            return Ok(new { aiAnswer = "I currently support revenue, orders and inventory analysis." });
 
         }
+
     }
 }

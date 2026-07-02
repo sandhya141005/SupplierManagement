@@ -49,7 +49,7 @@ namespace SupplierManagement.Api.AI
             sb.AppendLine("You may perform comparisons, rankings, or aggregations on this data to answer the question.");
             sb.AppendLine("Do NOT make up data not present in this list.");
             sb.AppendLine();
-            sb.AppendLine("=== COMPLETE SUPPLIER REVENUE DATA ===");
+            sb.AppendLine(" COMPLETE SUPPLIER REVENUE DATA ");
             foreach (var s in suppliers)
             {
                 sb.AppendLine($" {s.CompanyName} — Revenue: ₹{s.Revenue:N0}, Orders: {s.OrderCount}");
@@ -57,10 +57,11 @@ namespace SupplierManagement.Api.AI
 
             sb.AppendLine($"Total suppliers: {suppliers.Count}");
             sb.AppendLine();
-            sb.AppendLine("=== USER QUESTION ===");
+            sb.AppendLine(" USER QUESTION ");
             sb.AppendLine(userQuestion);
             sb.AppendLine();
-            sb.AppendLine("Answer concisely and professionally. Keep response under 150 words.");
+            sb.AppendLine("Answer concisely and professionally. Keep the stuff youre wondering to yourself and tell the accurate data alone with the stats.Keep response under 150 words.");
+
 
             return sb.ToString();
         }
@@ -72,7 +73,7 @@ namespace SupplierManagement.Api.AI
             sb.AppendLine("Answer the user's question using ONLY the data provided below.");
             sb.AppendLine("Do NOT make up numbers. Do NOT assume data not given.");
             sb.AppendLine();
-            sb.AppendLine("=== INVENTORY DATA  ===");
+            sb.AppendLine("INVENTORY DATA ");
             foreach (var p in products)
             {
                 sb.AppendLine($" {p.ProductName} (Supplier: {p.CompanyName}) — Stock: {p.StockQuantity} units");
@@ -80,13 +81,45 @@ namespace SupplierManagement.Api.AI
             }
             sb.AppendLine($"Total products: {products.Count}");
             sb.AppendLine();
-            sb.AppendLine("=== USER QUESTION ===");
+            sb.AppendLine("USER QUESTION ");
             sb.AppendLine(userQuestion);
             sb.AppendLine();
-            sb.AppendLine("Answer concisely and professionally. Keep response under 150 words.");
+            sb.AppendLine("Answer concisely and professionally. Keep the stuff youre wondering to yourself and tell the accurate data alone with the stats.Keep response under 150 words.");
 
             return sb.ToString();
         }
+        public static string BuildOrderInsightsPrompt(List<OrderSummaryDTO> orders, string userQuestion)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("You are a business operations analyst.");
+            sb.AppendLine("You have been given the complete order summary dataset from the database.");
+            sb.AppendLine("Answer the user's question using ONLY the data provided below.");
+            sb.AppendLine("You may perform comparisons, rankings, or aggregations on this data to answer the question.");
+            sb.AppendLine("Do NOT make up data not present in this list.");
+            sb.AppendLine();
+            sb.AppendLine(" COMPLETE ORDER SUMMARY DATA ");
+            foreach (var o in orders)
+            {
+                sb.AppendLine(
+                    $"Product: {o.ProductName}, " +
+                    $"Category: {o.Category}, " +
+                    $"Supplier: {o.CompanyName}, " +
+                    $"Units Sold: {o.UnitsSold}, " +
+                    $"Revenue: ₹{o.Revenue}, " +
+                    $"Current Stock: {o.CurrentStock}, " +
+                    $"Avg Daily Sales: {o.AvgDailySales:F2}, " +
+                    $"Days Until Stockout: {o.EstimatedDaysUntilStockout:F1}"
+                );
+            }
 
+            sb.AppendLine($"Total suppliers with orders: {orders.Count}");
+            sb.AppendLine();
+            sb.AppendLine("USER QUESTION");
+            sb.AppendLine(userQuestion);
+            sb.AppendLine();
+            sb.AppendLine("Answer concisely and professionally. Keep the stuff youre wondering to yourself and tell the accurate data alone with the stats.Keep response under 150 words.");
+
+            return sb.ToString();
+        }
     }
 }

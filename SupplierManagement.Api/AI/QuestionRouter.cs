@@ -4,14 +4,17 @@ namespace SupplierManagement.Api.AI
     {
         Revenue,
         Inventory,
+        Order,
         Unknown
     }
     public static class QuestionRouter
     {
         private static readonly string[] RevenueKeywords =
-            { "revenue", "profit", "sales", "supplier performance" };
+            { " Supplier","revenue", "profit", "sales", "supplier performance" };
         private static readonly string[] InventoryKeywords =
-            { "stock", "inventory", "restock","products","counts" };
+            { "stock", "inventory", "products","counts" };
+        private static readonly string[] OrderKeywords =
+{ "order", "orders", "purchase", "purchases", "bought", "demand","restock"};
         public static SkillType Route(string question)
         {
             if (string.IsNullOrWhiteSpace(question))
@@ -24,6 +27,8 @@ namespace SupplierManagement.Api.AI
 
             if (InventoryKeywords.Any(k => q.Contains(k)))
                 return SkillType.Inventory;
+            if (OrderKeywords.Any(k => q.Contains(k)))
+                return SkillType.Order;
             return SkillType.Unknown;
         }
     }

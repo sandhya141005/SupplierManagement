@@ -37,7 +37,7 @@ public class EmailService : IEmailService
             using var client = new SmtpClient();
             client.ServerCertificateValidationCallback =
     (s, c, h, e) => true;
-    Console.WriteLine("Before connect");
+            Console.WriteLine("Before connect");
             await client.ConnectAsync(_settings.SmtpHost, _settings.SmtpPort, SecureSocketOptions.Auto);
             Console.WriteLine("after connect");
             Console.WriteLine("Before auth");

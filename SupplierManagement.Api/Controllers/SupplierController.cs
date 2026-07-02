@@ -129,6 +129,6 @@ public class SupplierController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
-   
+    
 }
 

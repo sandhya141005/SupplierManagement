@@ -1,5 +1,6 @@
 using System.Diagnostics;
 namespace SupplierManagement.Api.Middleware;
+
 public class RequestLoggingMiddleware
 {
     private readonly RequestDelegate _next;
@@ -14,16 +15,12 @@ public class RequestLoggingMiddleware
     public async Task InvokeAsync(HttpContext context)
     {
         var stopwatch = Stopwatch.StartNew();
-
         var method = context.Request.Method;
         var path = context.Request.Path;
         var queryString = context.Request.QueryString;
-        var userAgent = context.Request.Headers["User-Agent"].ToString();
-        var ip = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
-
         _logger.LogInformation(
-            "REQUEST INNNNN {Method} {Path}{Query} | IP: {IP} | Agent: {Agent}",
-            method, path, queryString, ip, userAgent);
+            "REQUEST INNNNN {Method} {Path}{Query}",
+            method, path, queryString);
         await _next(context);
         stopwatch.Stop();
         var statusCode = context.Response.StatusCode;

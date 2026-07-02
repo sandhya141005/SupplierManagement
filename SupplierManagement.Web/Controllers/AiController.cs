@@ -20,7 +20,7 @@ namespace SupplierManagement.Web.Controllers
             return View();
         }
 
-        [HttpGet]
+        //[HttpGet]
         /*public async Task<IActionResult> GetInsights(string question)
         {
             if (string.IsNullOrWhiteSpace(question))

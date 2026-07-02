@@ -9,7 +9,6 @@ public class SessionAuthFilter : IAuthorizationFilter
     {
         "Auth", "Home"
     };
-
     public void OnAuthorization(AuthorizationFilterContext context)
     {
         var controllerName = context.RouteData.Values["controller"]?.ToString() ?? "";

@@ -8,7 +8,7 @@
     <div id="chatBox" style="height: 450px; overflow-y: auto; border: 1px solid #dee2e6;
         border-radius: 8px; padding: 16px; background: #FFFFFF">
         <div id="placeholder" class="text-muted text-center mt-5">
-            Ask a question about supplier revenue.
+            Ask a question.
         </div>
     </div>
     <div class="input-group mt-3">
@@ -29,12 +29,9 @@
 
     function appendMessage(role, text) {
         if (placeholder) placeholder.remove();
-
         const isUser = role === 'user';
-
         const wrapper = document.createElement('div');
         wrapper.className = 'd-flex mb-3 ' + (isUser ? 'justify-content-end' : 'justify-content-start');
-
         const bubble = document.createElement('div');
         bubble.style.cssText = `
             max-width: 70%;
@@ -49,16 +46,13 @@
         bubble.textContent = text;
         wrapper.appendChild(bubble);
         chatBox.appendChild(wrapper);
-        chatBox.scrollTop = chatBox.scrollHeight;
     }
 
     function appendThinking() {
         if (placeholder) placeholder.remove();
-
         const wrapper = document.createElement('div');
         wrapper.className = 'd-flex mb-3 justify-content-start';
         wrapper.id = 'thinkingBubble';
-
         const bubble = document.createElement('div');
         bubble.style.cssText = `
             padding: 10px 14px;
@@ -124,4 +118,5 @@
     questionInput.addEventListener('keydown', function (e) {
         if (e.key === 'Enter') sendQuestion();
     });
+    //based on the category, whats ordered the most and what does it tell about the userbase
 </script>

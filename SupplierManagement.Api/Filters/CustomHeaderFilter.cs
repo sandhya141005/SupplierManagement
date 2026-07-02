@@ -12,12 +12,11 @@ public class CustomHeaderFilter : IActionFilter
     {
         _logger = logger;
     }
-
     public void OnActionExecuting(ActionExecutingContext context)
     {
         var controller = context.RouteData.Values["controller"]?.ToString();
 
-        if (controller == "Ai")
+        if (controller == "Ai" || controller == "Test")
         {
             return;
         }
@@ -34,7 +33,7 @@ public class CustomHeaderFilter : IActionFilter
             _logger.LogWarning(
                 "HEADER FILTERRRRRRRRR: missing/invalid {Header} on {Method} {Path}",
                 RequiredHeader, context.HttpContext.Request.Method, context.HttpContext.Request.Path);
-
+            //tis for for returning 401
             context.Result = new UnauthorizedObjectResult(new
             {
                 error = "Invalid or missing API key",

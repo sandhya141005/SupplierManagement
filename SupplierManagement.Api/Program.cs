@@ -12,12 +12,6 @@ using Serilog;
 using Hangfire;
 using Hangfire.SqlServer;
 using SupplierManagement.Api.AI;
-/*Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console()
-    .WriteTo.File(
-        "Logs/log-.txt",
-        rollingInterval: RollingInterval.Day)
-    .CreateLogger();*/
 var builder = WebApplication.CreateBuilder(args);
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
@@ -62,6 +56,7 @@ builder.Services.Configure<EmailSettings>(
     builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<LoggingFilter>();
+builder.Services.AddScoped<IOrderSkill, OrderSkill>();
 builder.Services.AddOpenApi();
 builder.Services.AddScoped<IInventorySkill, InventorySkill>();
 builder.Services.AddDbContext<AppDbContext>(
