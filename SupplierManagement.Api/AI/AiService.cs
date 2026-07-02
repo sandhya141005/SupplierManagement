@@ -4,6 +4,7 @@ using System.Text.Json;
 using SupplierManagement.Data.DTO;
 namespace SupplierManagement.Api.AI
 {
+    //cheking brancheeeeeeeeeeeee
     public class AiService : IAiService
     {
         private readonly HttpClient _httpClient;

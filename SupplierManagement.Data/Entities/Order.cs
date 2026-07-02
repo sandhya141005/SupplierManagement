@@ -1,5 +1,4 @@
 using Microsoft.Identity.Client;
-
 namespace SupplierManagement.Data.Entities;
 public class Order
 {
