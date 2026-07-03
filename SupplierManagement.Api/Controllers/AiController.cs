@@ -3,7 +3,9 @@ using SupplierManagement.Api.AI;
 using SupplierManagement.Data.DTO;
 using SupplierManagement.Business.Interfaces;
 using SupplierManagement.Business.Services;
+using SupplierManagement.Business.Agent;
 namespace SupplierManagement.Api.Controllers
+
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -13,13 +15,15 @@ namespace SupplierManagement.Api.Controllers
         private readonly IRevenueSkill _revenueSkill;
         private readonly IInventorySkill _inventorySkill;
         private readonly IOrderSkill _orderSkill;
+        private readonly IAgentService _agent;
 
-        public AiController(IAiService aiService, IRevenueSkill revenueSkill, IInventorySkill inventorySkill, IOrderSkill orderSkill)
+        public AiController(IAiService aiService, IRevenueSkill revenueSkill, IInventorySkill inventorySkill, IOrderSkill orderSkill, IAgentService agent)
         {
             _aiService = aiService;
             _revenueSkill = revenueSkill;
             _inventorySkill = inventorySkill;
             _orderSkill = orderSkill;
+            _agent = agent;
         }
 
         [HttpGet("test")]
@@ -34,48 +38,8 @@ namespace SupplierManagement.Api.Controllers
             if (string.IsNullOrWhiteSpace(request?.Question))
                 return BadRequest(new { error = "Question cannot be empty." });
 
-            var skill = QuestionRouter.Route(request.Question);
-
-            if (skill == SkillType.Unknown)
-                return Ok(new { aiAnswer = "I currently support revenue and inventory analysis." });
-
-            if (skill == SkillType.Revenue)
-            {
-                var suppliers = await _revenueSkill.GetSuppliersAsync();
-
-                if (!suppliers.Any())
-                    return Ok(new { aiAnswer = "No revenue data available to answer your question." });
-
-                var prompt = AiService.BuildRevenueInsightsPrompt(suppliers, request.Question);
-                var answer = await _aiService.GetCompletionAsync(prompt);
-                return Ok(new { aiAnswer = answer });
-            }
-
-            if (skill == SkillType.Inventory)
-            {
-                var products = await _inventorySkill.GetStocksAsync();
-
-                if (!products.Any())
-                    return Ok(new { aiAnswer = "No inventory data available to answer your question." });
-
-                var prompt = AiService.BuildInventoryInsightsPrompt(products, request.Question);
-                var answer = await _aiService.GetCompletionAsync(prompt);
-                return Ok(new { aiAnswer = answer });
-            }
-            if (skill == SkillType.Order)
-            {
-                var orders = await _orderSkill.GetOrderSummaryAsync();
-
-                if (!orders.Any())
-                    return Ok(new { aiAnswer = "No order data available to answer your question." });
-
-                var prompt = AiService.BuildOrderInsightsPrompt(orders, request.Question);
-                var answer = await _aiService.GetCompletionAsync(prompt);
-                return Ok(new { aiAnswer = answer });
-            }
-            return Ok(new { aiAnswer = "I currently support revenue, orders and inventory analysis." });
-
+            var answer = await _agent.AskAsync(request.Question);
+            return Ok(new { aiAnswer = answer });
         }
-
     }
 }

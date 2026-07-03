@@ -19,19 +19,6 @@ namespace SupplierManagement.Web.Controllers
         {
             return View();
         }
-
-        //[HttpGet]
-        /*public async Task<IActionResult> GetInsights(string question)
-        {
-            if (string.IsNullOrWhiteSpace(question))
-                return PartialView("_RevenueInsightsResult", new RevenueInsightsModel
-                {
-                    ErrorMessage = "Please enter a question."
-                });
-
-            var data = await _aiService.GetRevenueInsightsAsync(question);
-            return PartialView("_RevenueInsightsResult", data);
-        }*/
         [HttpGet]
         public IActionResult Chat()
         {
@@ -43,12 +30,12 @@ namespace SupplierManagement.Web.Controllers
             if (string.IsNullOrWhiteSpace(request?.Question))
                 return BadRequest(new { error = "Question cannot be empty." });
 
-            var data = await _aiService.GetRevenueInsightsAsync(request.Question);
+            var data = await _aiService.AskAsync(request.Question);
 
             if (!string.IsNullOrEmpty(data.ErrorMessage))
                 return StatusCode(500, new { error = data.ErrorMessage });
 
-            return Ok(new { aiAnswer = data.AiAnswer, topSuppliers = data.TopSuppliers });
+            return Ok(new { aiAnswer = data.AiAnswer });
         }
 
     }

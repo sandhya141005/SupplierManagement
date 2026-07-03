@@ -1,8 +1,10 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using SupplierManagement.Business.Agent;
 using SupplierManagement.Data.DTO;
 namespace SupplierManagement.Api.AI
+
 {
     //cheking brancheeeeeeeeeeeee
     public class AiService : IAiService
@@ -41,7 +43,7 @@ namespace SupplierManagement.Api.AI
             return parsed?.choices?[0]?.message?.content ?? "No response.";
 
         }
-        public static string BuildRevenueInsightsPrompt(List<SupplierRevenueDTO> suppliers, string userQuestion)
+/*        public static string BuildRevenueInsightsPrompt(List<SupplierRevenueDTO> suppliers, string userQuestion)
         {
             var sb = new StringBuilder();
             sb.AppendLine("You are a financial business analyst.");
@@ -121,6 +123,6 @@ namespace SupplierManagement.Api.AI
             sb.AppendLine("Answer concisely and professionally. Keep the stuff youre wondering to yourself and tell the accurate data alone with the stats.Keep response under 150 words.");
 
             return sb.ToString();
-        }
+        }*/
     }
 }

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using SupplierManagement.Data.Context;
 using SupplierManagement.Business.Interfaces;
 using SupplierManagement.Business.Services;
+using SupplierManagement.Business.Agent;
 using SupplierManagement.Data.Interfaces;
 using SupplierManagement.Data.Repositories;
 using SupplierManagement.Api.Mappings;
@@ -50,7 +51,7 @@ builder.Services.AddHangfire(config => config
 
 builder.Services.AddHangfireServer();
 builder.Services.AddScoped<IRevenueRepository, RevenueRepository>();
-
+builder.Services.AddScoped<IAgentService, AgentService>();
 builder.Services.AddScoped<IRevenueSkill, RevenueSkill>();
 builder.Services.Configure<EmailSettings>(
     builder.Configuration.GetSection("EmailSettings"));

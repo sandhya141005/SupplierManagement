@@ -10,7 +10,7 @@ namespace SupplierManagement.Web.Services
         {
             _httpClient = httpClient;
         }
-        public async Task<RevenueInsightsModel> GetRevenueInsightsAsync(string question)
+        public async Task<RevenueInsightsModel> AskAsync(string question)
         {
             var model = new RevenueInsightsModel { Question = question };
             try

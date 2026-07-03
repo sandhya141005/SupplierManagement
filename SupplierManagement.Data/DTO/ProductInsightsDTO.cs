@@ -1,6 +1,6 @@
 namespace SupplierManagement.Data.DTO
 {   
-public class ProductInsightDto
+public class ProductInsightsDTO
     {
         public string ProductName { get; set; }
         public string SupplierName { get; set; }
